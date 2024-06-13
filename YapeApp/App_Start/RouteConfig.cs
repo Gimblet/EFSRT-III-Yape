@@ -11,6 +11,7 @@ namespace YapeApp
     {
         public static void RegisterRoutes(RouteCollection routes)
         {
+            QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
