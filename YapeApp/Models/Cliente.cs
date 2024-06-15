@@ -10,7 +10,7 @@ namespace YapeApp.Models
     {
         [Required]
         [Display(Name = "ID", Order = 0)]
-        public string IDE_CLI {  get; set; }
+        public int IDE_CLI {  get; set; }
 
         [Required]
         [Display(Name = "DNI", Order = 1)]
@@ -39,7 +39,7 @@ namespace YapeApp.Models
 
         public Cliente()
         {
-            IDE_CLI = "";
+            IDE_CLI = 0;
             DNI_CLI = "";
             NOM_CLI = "";
             APE_CLI = "";

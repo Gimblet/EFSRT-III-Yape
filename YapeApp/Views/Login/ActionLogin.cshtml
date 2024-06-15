@@ -1,0 +1,31 @@
+﻿@model YapeApp.Models.Cliente
+
+@{
+    ViewBag.Title = "ActionLogin";
+}
+
+<h2>Iniciar Sesión</h2>
+
+@using (Html.BeginForm("ActionLogin", "Login", FormMethod.Post))
+{
+    <div class="container">
+        @if (ViewBag.UsuarioInvalido != null)
+        {
+            <div class="alert alert-danger">
+                @ViewBag.UsuarioInvalido
+            </div>
+        }
+        <div class="form-group">
+            @Html.Label("Usuario")
+            @Html.TextBoxFor(Model => Model.NUM_CLI, "Usuario", new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            @Html.Label("Clave")
+            @Html.TextBoxFor(Model => Model.CLA_CLI, "Clave", new { @class = "form-control" })
+        </div>
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary">Ingresar</button>
+        </div>
+    </div>
+}
+
