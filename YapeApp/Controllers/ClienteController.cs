@@ -63,7 +63,15 @@ namespace YapeApp.Controllers
         {
             return Document.Create(contenedor =>
             {
+                contenedor.Page(pagina =>
+                {
+                    pagina.Size(PageSizes.A4);
+                    pagina.Margin(2, Unit.Centimetre);
+                    pagina.PageColor(Colors.White);
+                    pagina.DefaultTextStyle(x => x.FontSize(20));
 
+                    pagina.Header().Text("Reporte de Yapes").SemiBold().FontSize(20).FontColor(Colors.Blue.Medium);
+                });
             });
         }
     }
