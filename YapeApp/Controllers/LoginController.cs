@@ -28,6 +28,11 @@ namespace YapeApp.Controllers
                 cnx.Open();
                 cmd.ExecuteNonQuery();
                 cnx.Close();
+
+                // Store values in session state
+                Session["ID"] = usuarioValido.IDE_CLI;
+                Session["Numero"] = usuarioValido.NUM_CLI;
+
                 return "Valido";
             }
             else
@@ -64,12 +69,13 @@ namespace YapeApp.Controllers
             return View();
         }
 
-        [HttpPost]public ActionResult ActionLogin(Cliente datosRecibidos)
+        [HttpPost]
+        public ActionResult ActionLogin(Cliente datosRecibidos)
         {
             string respuesta = Login(datosRecibidos);
             if (respuesta.Equals("Valido"))
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Cliente");
             }
             else
             {

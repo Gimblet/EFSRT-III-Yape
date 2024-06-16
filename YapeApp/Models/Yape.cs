@@ -10,7 +10,7 @@ namespace YapeApp.Models
     {
         [Required]
         [Display(Name = "ID", Order = 0)]
-        public string IDE_YAP {  get; set; }
+        public int IDE_YAP {  get; set; }
 
         [Required]
         [Display(Name = "Numero Recibidor", Order = 1)]
