@@ -26,8 +26,8 @@ namespace YapeApp.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=.;Initial Catalog=DBYape;Integrated Security=True;TrustServerCertific" +
-            "ate=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=.;Initial Catalog=DBYape;User ID=sa;Password=sql;TrustServerCertifica" +
+            "te=True")]
         public string Cadena {
             get {
                 return ((string)(this["Cadena"]));

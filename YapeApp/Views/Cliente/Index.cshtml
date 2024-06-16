@@ -29,29 +29,32 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.IDE_YAP)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.NRC_YAP)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.NRZ_YAP)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.MON_YAP)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.FEC_YAP)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-        </td>
-    </tr>
-}
-
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IDE_YAP)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NRC_YAP)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NRZ_YAP)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MON_YAP)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FEC_YAP)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+    }
 </table>
+
+@Html.ActionLink("Exportar Registros a PDF", "ActionPDF", "Cliente", new { @class = "btn btn-primary" })
+

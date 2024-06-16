@@ -49,5 +49,22 @@ namespace YapeApp.Controllers
         {
             return View(listarYapes());
         }
+
+        [HttpGet]
+        public ActionResult ActionPDF()
+        {
+            List<Yape> lista = listarYapes();
+            var placeholder = GenerarPDF(lista);
+            var pdf = placeholder.GeneratePdf();
+            return File(pdf, "application/pdf", "ReporteYapes.pdf");
+        }
+
+        IDocument GenerarPDF(List<Yape> lista)
+        {
+            return Document.Create(contenedor =>
+            {
+
+            });
+        }
     }
 }

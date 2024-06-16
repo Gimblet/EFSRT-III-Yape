@@ -21,6 +21,8 @@ namespace YapeApp.Controllers
             Cliente usuarioValido = validarLogin(datosRecibidos);
             if (usuarioValido != null)
             {
+                // Si verificarSesionAnterior es igual a 1, significa que ya habia un usuario logeado con las credenciales dadas
+                if (verificarSesionAnterior(usuarioValido) == 1) { eliminarSesion(usuarioValido); }
                 SqlCommand cmd = new SqlCommand("SP_AgregarNuevaSesion", cnx);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@id", usuarioValido.IDE_CLI);
@@ -61,6 +63,32 @@ namespace YapeApp.Controllers
             cnx.Close();
             dr.Close();
             return cliente;
+        }
+        public int verificarSesionAnterior(Cliente id)
+        {
+            int resultado = 0;
+            SqlCommand cmd = new SqlCommand("SP_BuscarSesion", cnx);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@id", id.IDE_CLI);
+            cnx.Open();
+            SqlDataReader rd = cmd.ExecuteReader();
+            if (rd.Read())
+            {
+                resultado = 1;
+            }
+            rd.Close();
+            cnx.Close (); 
+            return resultado;
+        }
+
+        public void eliminarSesion(Cliente id)
+        {
+            SqlCommand cmd = new SqlCommand("SP_EliminarSesion", cnx);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@id", id.IDE_CLI);
+            cnx.Open();
+            cmd.ExecuteNonQuery();
+            cnx.Close();
         }
 
         // GET: Login
