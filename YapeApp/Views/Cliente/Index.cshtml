@@ -5,11 +5,12 @@
 }
 
 @{ 
-    string nombre = Session["nombre"].ToString();
+    string nombre = Session["Nombre"].ToString();
+    string saldo = Session["Saldo"].ToString();
 }
 
-<h2>Hola, @ViewBag.nombre</h2>
-<h3>Saldo : @ViewBag.saldo</h3>
+<h2>Hola, @nombre</h2>
+<h3>Saldo : @saldo</h3>
 
 <p>
     @Html.ActionLink("Nuevo Yapeo", "Create")

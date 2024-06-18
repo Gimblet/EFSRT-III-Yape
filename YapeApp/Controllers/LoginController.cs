@@ -105,20 +105,69 @@ namespace YapeApp.Controllers
         private string obtenerNombre(string llave)
         {
             string nombre = string.Empty;
-            return "";
+            SqlCommand cmd = new SqlCommand("Sp_ObtenerNombre", cnx);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@numero", llave);
+            cnx.Open();
+            SqlDataReader rd = cmd.ExecuteReader();
+            if (rd.Read())
+            {
+                nombre = rd.GetString(0);
+            }
+            cnx.Close();
+            rd.Close();
+            return nombre;
         }
 
         private string obtenerApellido(string llave)
         {
-            return "";
+            string apellido = string.Empty;
+            SqlCommand cmd = new SqlCommand("Sp_ObtenerApellido", cnx);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@numero", llave);
+            cnx.Open();
+            SqlDataReader rd = cmd.ExecuteReader();
+            if (rd.Read())
+            {
+                apellido = rd.GetString(0);
+            }
+            cnx.Close();
+            rd.Close();
+            return apellido;
         }
+
         private string obtenerNombreCompleto(string llave)
         {
-            return "";
+            string nombreCompleto = string.Empty;
+            SqlCommand cmd = new SqlCommand("Sp_ObtenerNombreCompleto", cnx);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@numero", llave);
+            cnx.Open();
+            SqlDataReader rd = cmd.ExecuteReader();
+            if (rd.Read())
+            {
+                nombreCompleto = rd.GetString(0);
+            }
+            cnx.Close();
+            rd.Close();
+            return nombreCompleto;
         }
+
         private double obtenerSaldo(string llave)
         {
-            return 0.0;
+            double saldo = 0.0;
+            SqlCommand cmd = new SqlCommand("Sp_ObtenerSaldo", cnx);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@numero", llave);
+            cnx.Open();
+            SqlDataReader rd = cmd.ExecuteReader();
+            if (rd.Read())
+            {
+                saldo = rd.GetDouble(0);
+            }
+            cnx.Close();
+            rd.Close();
+            return saldo;
         }
         #endregion
 
