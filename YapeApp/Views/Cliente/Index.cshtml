@@ -1,13 +1,18 @@
 ﻿@model IEnumerable<YapeApp.Models.Yape>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Inicio";
 }
 
-<h2>Index</h2>
+@{ 
+    string nombre = Session["nombre"].ToString();
+}
+
+<h2>Hola, @ViewBag.nombre</h2>
+<h3>Saldo : @ViewBag.saldo</h3>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Nuevo Yapeo", "Create")
 </p>
 <table class="table">
     <tr>

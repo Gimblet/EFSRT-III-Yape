@@ -31,9 +31,7 @@ namespace YapeApp.Controllers
                 cmd.ExecuteNonQuery();
                 cnx.Close();
 
-                // Store values in session state
-                Session["ID"] = usuarioValido.IDE_CLI;
-                Session["Numero"] = usuarioValido.NUM_CLI;
+                AlmacenarDatos(usuarioValido);
 
                 return "Valido";
             }
@@ -77,7 +75,7 @@ namespace YapeApp.Controllers
                 resultado = 1;
             }
             rd.Close();
-            cnx.Close (); 
+            cnx.Close();
             return resultado;
         }
 
@@ -90,6 +88,39 @@ namespace YapeApp.Controllers
             cmd.ExecuteNonQuery();
             cnx.Close();
         }
+
+        #region Almacenamiento de Datos
+
+        public void AlmacenarDatos(Cliente datosUsuario)
+        {
+            string llave = datosUsuario.NUM_CLI;
+
+            Session["Numero"] = datosUsuario.NUM_CLI;
+            Session["Nombre"] = obtenerNombre(llave);
+            Session["Apellido"] = obtenerApellido(llave);
+            Session["NombreCompleto"] = obtenerNombreCompleto(llave);
+            Session["Saldo"] = obtenerSaldo(llave);
+        }
+
+        private string obtenerNombre(string llave)
+        {
+            string nombre = string.Empty;
+            return "";
+        }
+
+        private string obtenerApellido(string llave)
+        {
+            return "";
+        }
+        private string obtenerNombreCompleto(string llave)
+        {
+            return "";
+        }
+        private double obtenerSaldo(string llave)
+        {
+            return 0.0;
+        }
+        #endregion
 
         // GET: Login
         public ActionResult ActionLogin()
