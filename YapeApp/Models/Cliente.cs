@@ -34,6 +34,7 @@ namespace YapeApp.Models
         public double SAL_CLI { get; set; }
 
         [Required]
+        [DataType(DataType.Password)]
         [Display(Name = "Clave", Order = 6)]
         public string CLA_CLI { get; set; }
 

@@ -44,10 +44,67 @@ namespace YapeApp.Controllers
             return lista;
         }
 
+        public string cerrarSesion()
+        {
+            int id = obtenerId();
+            string respuesta = "Sesion Invalida";
+            if (id != -1)
+            {
+                SqlCommand cmd = new SqlCommand("SP_EliminarSesion", cnx);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@id", id);
+                cnx.Open();
+                int value = cmd.ExecuteNonQuery();
+                if (value == 1)
+                {
+                    Session.Clear();
+                    respuesta = "Sesion Cerrada Correctamente";
+                    return respuesta;
+                }
+                else
+                {
+                    Session.Clear();
+                    return respuesta;
+                }
+            }
+            return respuesta;
+        }
+
+        private int obtenerId()
+        {
+            int id = -1;
+            if (Session["Numero"] != null)
+            {
+                SqlCommand cmd = new SqlCommand("Sp_ObtenerIDClientexNumero", cnx);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@numero", Session["Numero"]);
+                cnx.Open();
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.Read())
+                {
+                    id = dr.GetInt32(0);
+                }
+                cnx.Close();
+                dr.Close();
+            }
+            return id;
+        }
+
         // GET: Cliente
         public ActionResult Index()
         {
             return View(listarYapes());
+        }
+
+        public ActionResult ActionCerrarSesion()
+        {
+            string mensaje = cerrarSesion();
+            if (mensaje.Equals("Sesion Invalida"))
+            {
+                mensaje = "Ocurrió un problema, vuelva a iniciar Sesión";
+            }
+            ViewBag.mensaje = mensaje; 
+            return View("~/Views/Login/ActionLogin.cshtml");
         }
 
         [HttpGet]

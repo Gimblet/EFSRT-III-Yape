@@ -15,13 +15,19 @@
                 @ViewBag.UsuarioInvalido
             </div>
         }
+        @if (ViewBag.mensaje != null)
+        {
+            <div class="alert alert-danger">
+                @ViewBag.mensaje
+            </div>
+        }
         <div class="form-group">
-            @Html.Label("Usuario")
-            @Html.TextBoxFor(Model => Model.NUM_CLI, "Usuario", new { @class = "form-control" })
+            @Html.Label("Número")
+            @Html.TextBoxFor(Model => Model.NUM_CLI, "Numero", new { @class = "form-control" })
         </div>
         <div class="form-group">
             @Html.Label("Clave")
-            @Html.TextBoxFor(Model => Model.CLA_CLI, "Clave", new { @class = "form-control" })
+            @Html.PasswordFor(Model => Model.CLA_CLI, new { @class = "form-control" })
         </div>
         <br />
         <div class="btn-group">
