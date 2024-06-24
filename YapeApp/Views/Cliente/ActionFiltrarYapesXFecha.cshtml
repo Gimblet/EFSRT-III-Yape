@@ -1,0 +1,57 @@
+﻿@model IEnumerable<YapeApp.Models.Yape>
+
+@{
+    ViewBag.Title = "ActionFiltrarYapesXFecha";
+}
+
+<h2>ActionFiltrarYapesXFecha</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.IDE_YAP)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.NRC_YAP)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.NRZ_YAP)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.MON_YAP)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Fecha)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.IDE_YAP)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.NRC_YAP)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.NRZ_YAP)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.MON_YAP)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Fecha)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+        </td>
+    </tr>
+}
+
+</table>

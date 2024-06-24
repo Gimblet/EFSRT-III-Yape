@@ -11,6 +11,7 @@ using QuestPDF.Infrastructure;
 using QuestPDF.Helpers;
 using System.Data.SqlClient;
 using YapeApp.Models;
+using QuestPDF.Previewer;
 
 namespace YapeApp.Controllers
 {
@@ -35,7 +36,7 @@ namespace YapeApp.Controllers
                     yape.NRC_YAP = dr.GetString(1);
                     yape.NRZ_YAP = dr.GetString(2);
                     yape.MON_YAP = dr.GetDouble(3);
-                    yape.FEC_YAP = dr.GetDateTime(4);
+                    yape.Fecha = dr.GetString(4);
                 };
                 lista.Add(yape);
             };
@@ -90,6 +91,32 @@ namespace YapeApp.Controllers
             return id;
         }
 
+        private List<Yape> filtrarYapesXFecha(string fecha)
+        {
+            List<Yape> lista = new List<Yape>();
+            SqlCommand cmd = new SqlCommand("SP_BuscarYapeXFecha", cnx);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@numero", Session["Numero"]);
+            cmd.Parameters.AddWithValue("@fecha", fecha);
+            cnx.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                Yape yape = new Yape();
+                {
+                    yape.IDE_YAP = dr.GetInt32(0);
+                    yape.NRC_YAP = dr.GetString(1);
+                    yape.NRZ_YAP = dr.GetString(2);
+                    yape.MON_YAP = dr.GetDouble(3);
+                    yape.Fecha = dr.GetString(4);
+                };
+                lista.Add(yape);
+            };
+            dr.Close();
+            cnx.Close();
+            return lista;
+        }
+
         // GET: Cliente
         public ActionResult Index()
         {
@@ -103,8 +130,12 @@ namespace YapeApp.Controllers
             {
                 mensaje = "Ocurrió un problema, vuelva a iniciar Sesión";
             }
-            ViewBag.mensaje = mensaje; 
+            ViewBag.mensaje = mensaje;
             return View("~/Views/Login/ActionLogin.cshtml");
+        }
+        public ActionResult ActionFiltrarYapesXFecha(string fecha)
+        {
+            return View(filtrarYapesXFecha(fecha));
         }
 
         [HttpGet]

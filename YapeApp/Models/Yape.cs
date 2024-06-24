@@ -28,5 +28,9 @@ namespace YapeApp.Models
         [DataType(DataType.Date)]
         [Display(Name = "Fecha", Order = 4)]
         public DateTime FEC_YAP { get; set; }
+
+        [Required]
+        [Display(Name = "Fecha", Order = 5)]
+        public string Fecha { get; set; }
     }
 }

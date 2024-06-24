@@ -74,7 +74,14 @@ VALUES
 	('999888777', '999333222', 38.21),
 	('999333222', '999888777', 43.10),
 	('999333222', '999888777', 10.38),
-	('999333222', '113344552', 193.23 )
+	('999333222', '113344552', 193.23)
+GO
+
+INSERT INTO DATOS.YAPE
+	(NRC_YAP, NRZ_YAP, MON_YAP, FEC_YAP)
+VALUES
+	('999888777', '999333222', 394.12, '20240623 09:54:01 PM'),
+	('999333222', '113344552', 37.21, '20230624 01:54:01 PM')
 GO
 
 -- CREAR PROCEDIMIENTOS ALMACENADOS
@@ -201,28 +208,75 @@ GO
 
 --SP_RealizarYapeo'999333222','999888777',900
 
-CREATE PROCEDURE SP_ListarYapes
+CREATE OR ALTER PROCEDURE SP_ListarYapes
 (
 	@numero	CHAR(9)
 )
 AS
 BEGIN
-	SELECT Y.*
+	SELECT Y.IDE_YAP AS [CODIGO],
+			Y.NRC_YAP AS [NUMERO RECIBIENTE],
+			Y.NRZ_YAP AS [NUMERO REALIZANTE],
+			Y.MON_YAP AS [MONTO],
+			(CAST(DAY(Y.FEC_YAP) AS CHAR(2)) + SPACE(1) +
+					'de' + SPACE(1) +
+					(CASE MONTH(Y.FEC_YAP)
+						 WHEN 1 THEN 'Enero'
+						 WHEN 2 THEN 'Febrero'
+						 WHEN 3 THEN 'Marzo'
+						 WHEN 4 THEN 'Abril'
+						 WHEN 5 THEN 'Mayo'
+						 WHEN 6 THEN 'Junio'
+						 WHEN 7 THEN 'Julio'
+						 WHEN 8 THEN 'Agosto'
+						 WHEN 9 THEN 'Septiembre'
+						 WHEN 10 THEN 'Octubre'
+						 WHEN 11 THEN 'Noviembre'
+						 WHEN 12 THEN 'Diciembre'
+					 END) + SPACE(1) +
+					 'del' + SPACE(1) +
+					 CAST(YEAR(Y.FEC_YAP) AS CHAR(4)) + SPACE(1) +
+					 'a las' + SPACE(1) + 
+					 FORMAT(Y.FEC_YAP, 'HH:mm')) AS [Fecha]
 	FROM DATOS.YAPE AS Y
 	WHERE Y.NRC_YAP = @numero OR Y.NRZ_YAP = @numero
 END
 GO
 
-CREATE PROCEDURE SP_BuscarYape
+CREATE OR ALTER PROCEDURE SP_BuscarYapeXFecha
 (
 	@numero CHAR(9),
-	@id		INT
+	@fecha	DATE
 )
 AS
 BEGIN
-	SELECT *
+	SET DATEFORMAT DMY
+	SELECT	Y.IDE_YAP AS [CODIGO],
+			Y.NRC_YAP AS [NUMERO RECIBIENTE],
+			Y.NRZ_YAP AS [NUMERO REALIZANTE],
+			Y.MON_YAP AS [MONTO],
+			(CAST(DAY(Y.FEC_YAP) AS CHAR(2)) + SPACE(1) +
+					'de' + SPACE(1) +
+					(CASE MONTH(Y.FEC_YAP)
+						 WHEN 1 THEN 'Enero'
+						 WHEN 2 THEN 'Febrero'
+						 WHEN 3 THEN 'Marzo'
+						 WHEN 4 THEN 'Abril'
+						 WHEN 5 THEN 'Mayo'
+						 WHEN 6 THEN 'Junio'
+						 WHEN 7 THEN 'Julio'
+						 WHEN 8 THEN 'Agosto'
+						 WHEN 9 THEN 'Septiembre'
+						 WHEN 10 THEN 'Octubre'
+						 WHEN 11 THEN 'Noviembre'
+						 WHEN 12 THEN 'Diciembre'
+					 END) + SPACE(1) +
+					 'del' + SPACE(1) +
+					 CAST(YEAR(Y.FEC_YAP) AS CHAR(4)) + SPACE(1) +
+					 'a las' + SPACE(1) + 
+					 FORMAT(Y.FEC_YAP, 'HH:mm')) AS [Fecha]
 	FROM DATOS.YAPE AS Y
-	WHERE Y.NRC_YAP = @numero OR Y.NRZ_YAP = @numero
+	WHERE (Y.NRC_YAP = @numero OR Y.NRZ_YAP = @numero) AND CAST(Y.FEC_YAP AS date) = @fecha
 END
 GO
 

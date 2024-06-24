@@ -1,10 +1,11 @@
 ﻿@model IEnumerable<YapeApp.Models.Yape>
+@Styles.Render("~/Content/Style.css")
 
 @{
     ViewBag.Title = "Inicio";
 }
 
-@{ 
+@{
     string nombre = Session["Nombre"].ToString();
     string saldo = Session["Saldo"].ToString();
 }
@@ -15,6 +16,13 @@
 <p>
     @Html.ActionLink("Nuevo Yapeo", "Create")
 </p>
+@Html.ActionLink("Exportar Registros a PDF", "ActionPDF", "Cliente", new { @class = "btn btn-primary CerrarSesion" })
+@using (Html.BeginForm("ActionFiltrarYapesXFecha", "Cliente", FormMethod.Post))
+{
+    @Html.DisplayNameFor(model => model.Fecha)
+    <input type="date" name="fecha" />
+    <input type="submit" value="Filtrar" />
+}
 <table class="table">
     <tr>
         <th>
@@ -30,7 +38,7 @@
             @Html.DisplayNameFor(model => model.MON_YAP)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.FEC_YAP)
+            @Html.DisplayNameFor(model => model.Fecha)
         </th>
         <th></th>
     </tr>
@@ -51,7 +59,7 @@
                 @Html.DisplayFor(modelItem => item.MON_YAP)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FEC_YAP)
+                @Html.DisplayFor(modelItem => item.Fecha)
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
@@ -62,6 +70,5 @@
     }
 </table>
 
-@Html.ActionLink("Exportar Registros a PDF", "ActionPDF", "Cliente", new { @class = "btn btn-primary" })
 @Html.ActionLink("Cerrar Sesion", "ActionCerrarSesion", "Cliente", new { @class = "btn btn-primary" })
 
