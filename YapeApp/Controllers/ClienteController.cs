@@ -12,6 +12,7 @@ using QuestPDF.Helpers;
 using System.Data.SqlClient;
 using YapeApp.Models;
 using QuestPDF.Previewer;
+using System.Web.WebPages;
 
 namespace YapeApp.Controllers
 {
@@ -117,9 +118,59 @@ namespace YapeApp.Controllers
             return lista;
         }
 
-        // GET: Cliente
-        public ActionResult Index()
+        private string Yapear(Yape yape)
         {
+            string mensaje = string.Empty;
+            try
+            {
+                SqlCommand cmd = new SqlCommand("Sp_RealizarYapeo", cnx);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@numeroRecibiente", yape.NRC_YAP);
+                cmd.Parameters.AddWithValue("@numeroRealizante", Session["Numero"]);
+                cmd.Parameters.AddWithValue("@monto", yape.MON_YAP);
+                cnx.Open();
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.Read())
+                {
+                    mensaje = dr[0].ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                mensaje = ex.Message;
+            }
+            finally
+            {
+                cnx.Close();
+            }
+            return mensaje;
+        }
+
+        private double actualizarSaldo()
+        {
+            double saldo = 0.0;
+            SqlCommand cmd = new SqlCommand("Sp_ObtenerSaldo", cnx);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@numero", Session["Numero"]);
+            cnx.Open();
+            SqlDataReader rd = cmd.ExecuteReader();
+            if (rd.Read())
+            {
+                saldo = rd.GetDouble(0);
+            }
+            cnx.Close();
+            rd.Close();
+            return saldo;
+        }
+
+        // GET: Cliente
+        public ActionResult Index(string mensaje)
+        {
+            if (!mensaje.IsEmpty())
+            {
+                ViewBag.mensaje = mensaje;
+            }
             return View(listarYapes());
         }
 
@@ -136,6 +187,33 @@ namespace YapeApp.Controllers
         public ActionResult ActionFiltrarYapesXFecha(string fecha)
         {
             return View(filtrarYapesXFecha(fecha));
+        }
+
+        public ActionResult realizarYapeo(string mensaje)
+        {
+            if(!mensaje.IsEmpty() && mensaje.Contains("Error"))
+            {
+                ViewBag.error = mensaje;
+                return View();
+            }
+            ViewBag.mensaje = mensaje;
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult ActionYapear(Yape datos)
+        {
+            string mensaje = Yapear(datos);
+            if (mensaje.Equals("Ocurrió un problema, vuelva a iniciar sesión"))
+            {
+                return RedirectToAction("ActionCerrarSesion");
+            }
+            else if (mensaje.Contains("Error"))
+            {
+                return RedirectToAction("RealizarYapeo", new { mensaje = mensaje });
+            }
+            Session["Saldo"] = actualizarSaldo();
+            return RedirectToAction("Index", new { mensaje = mensaje });
         }
 
         [HttpGet]

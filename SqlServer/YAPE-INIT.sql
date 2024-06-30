@@ -23,7 +23,7 @@ CREATE TABLE LOGINS.CLIENTE
 	NOM_CLI		VARCHAR(50)		NOT NULL,
 	APE_CLI		VARCHAR(50)		NOT NULL,
 	NUM_CLI		CHAR(9)			NOT NULL UNIQUE,
-	SAL_CLI		FLOAT			DEFAULT 0.0,
+	SAL_CLI		FLOAT			NOT NULL DEFAULT 0.0,
 	CLA_CLI		VARCHAR(100)	NOT NULL,
 	CHECK(SAL_CLI > 0) 
 )
@@ -151,7 +151,7 @@ BEGIN
 END
 GO
 
-CREATE FUNCTION FN_ObtenerSaldo
+CREATE OR ALTER FUNCTION FN_ObtenerSaldo
 (
 	@id	INT
 )
@@ -199,24 +199,29 @@ BEGIN
 	DECLARE @saldoCuenta FLOAT;
 	DECLARE @idYape INT;
 
+	EXEC @idRecibiente = FN_ObtenerID @numeroRecibiente;
 	EXEC @idRealizante = FN_ObtenerID @numeroRealizante;
-	EXEC @idRecibiente = FN_ObtenerID @numeroRealizante;
 	EXEC @saldoCuenta = FN_ObtenerSaldo @idRealizante;
+
 	IF (@saldoCuenta IS NULL)
 		BEGIN
-			SELECT 'El número realizante tiene que estar activo para realizar un Yapeo' AS [Mensaje]
+			SELECT 'Ocurrió un problema, vuelva a iniciar sesión' AS [Mensaje]
+			RETURN;
 		END
 	ELSE IF(@saldoCuenta < @monto)
 		BEGIN
-			SELECT 'Saldo Insuficiente' AS [Mensaje];
+			SELECT 'Error >> Saldo Insuficiente' AS [Mensaje]
 			RETURN;
 		END
-	ELSE IF(@idRecibiente != NULL)
+	ELSE IF(@idRecibiente IS NULL)
 		BEGIN
-			SELECT 'Numero no Encontrado' AS [Mensaje]
+			SELECT 'Error >> Numero no Encontrado' AS [Mensaje]
 			RETURN;
 		END
 	ELSE
+		BEGIN
+			SELECT 'Yape Realizado Correctamente' AS [Mensaje]
+		END
 		BEGIN
 			INSERT INTO DATOS.YAPE (NRC_YAP, NRZ_YAP, MON_YAP)
 			VALUES (@numeroRecibiente, @numeroRealizante, @monto);
@@ -229,11 +234,14 @@ BEGIN
 		BEGIN
 			INSERT INTO DATOS.DETALLECLIYAP
 			VALUES(@idRecibiente, @idRealizante, @idYape)
+		END	
+		BEGIN
+			UPDATE LOGINS.CLIENTE SET SAL_CLI = @saldoCuenta - @monto
 		END
 END
 GO
 
---SP_RealizarYapeo '999888777','999333222', 100
+--SP_RealizarYapeo '999333222','999888777', 100
 
 CREATE OR ALTER PROCEDURE SP_ListarYapes
 (

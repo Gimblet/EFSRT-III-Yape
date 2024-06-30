@@ -13,11 +13,18 @@
 <h2>Hola, @nombre</h2>
 <h3>Saldo : @saldo</h3>
 
+@if (ViewBag.mensaje != null)
+{
+    <div class="alert alert-success" role="alert">
+        @ViewBag.mensaje
+    </div>
+}
+
 <div class="container" style="margin-left: 15%">
     <div class="row m-auto">
         <div class="col-auto">
             <p>
-                @Html.ActionLink("Nuevo Yapeo", "Create", "Cliente", new { @class = "btn btn-primary" })
+                @Html.ActionLink("Nuevo Yapeo", "realizarYapeo", "Cliente", new { @class = "btn btn-primary" })
             </p>
         </div>
         <div class="col-auto row h-auto ms-5 flex-fill gap-3">

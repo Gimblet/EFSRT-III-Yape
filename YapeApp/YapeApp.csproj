@@ -196,6 +196,7 @@
     <Content Include="Views\Login\ActionLogin.cshtml" />
     <Content Include="Views\Cliente\Index.cshtml" />
     <Content Include="Views\Cliente\ActionFiltrarYapesXFecha.cshtml" />
+    <Content Include="Views\Cliente\realizarYapeo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

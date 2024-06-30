@@ -1,0 +1,45 @@
+﻿@model YapeApp.Models.Yape
+
+@{
+    ViewBag.Title = "Yapear";
+}
+
+<h2>Yapear</h2>
+
+@if (ViewBag.error != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.error
+    </div>
+}
+
+@using (Html.BeginForm("ActionYapear", "Cliente", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.NRC_YAP, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.NRC_YAP, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NRC_YAP, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.MON_YAP, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.MON_YAP, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.MON_YAP, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="btn-group mt-3">
+            <input type="submit" value="Yapear" class="btn btn-primary" />
+            @Html.ActionLink("Cancelar", "Index", "Cliente", new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+}
