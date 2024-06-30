@@ -43,11 +43,14 @@ GO
 
 CREATE TABLE DATOS.DETALLECLIYAP
 (
-	IDE_CLI INT	NOT NULL,
-	IDE_YAP	INT	NOT NULL
-	FOREIGN KEY(IDE_CLI) REFERENCES LOGINS.CLIENTE(IDE_CLI),
-	FOREIGN KEY(IDE_YAP) REFERENCES DATOS.YAPE(IDE_YAP),
-	PRIMARY KEY(IDE_CLI, IDE_YAP)
+	IDE_DET     INT NOT NULL IDENTITY(1,1),
+	IDE_CLI_REC INT	NOT NULL,
+	IDE_CLI_REA INT NOT NULL,
+	IDE_YAP	    INT	NOT NULL
+	CONSTRAINT FK_TO_CLIREA FOREIGN KEY(IDE_CLI_REA) REFERENCES LOGINS.CLIENTE(IDE_CLI),
+	CONSTRAINT FK_TO_CLIREC FOREIGN KEY(IDE_CLI_REC) REFERENCES LOGINS.CLIENTE(IDE_CLI),
+	CONSTRAINT FK_TO_IDEYAP FOREIGN KEY(IDE_YAP) REFERENCES DATOS.YAPE(IDE_YAP),
+	CONSTRAINT FK_TO_IDEDET PRIMARY KEY(IDE_DET)
 )
 GO
 
@@ -65,23 +68,28 @@ INSERT INTO LOGINS.CLIENTE
 VALUES
 	('78474311','Diego Anderson','Villena Arias','999888777',384.24,'Diego24'),
 	('73674621','Dario Benjamin','Quintana Pascual','999333222',511.34,'Benja31'),
-	('48575221','Flor Ariana','Tuesta Quesada','113344552',1384.34,'Flor38')
-GO
-
-INSERT INTO DATOS.YAPE
-	(NRC_YAP, NRZ_YAP, MON_YAP)
-VALUES
-	('999888777', '999333222', 38.21),
-	('999333222', '999888777', 43.10),
-	('999333222', '999888777', 10.38),
-	('999333222', '113344552', 193.23)
+	('48575221','Flor Ariana','Tuesta Quesada','913344552',1384.34,'Flor38')
 GO
 
 INSERT INTO DATOS.YAPE
 	(NRC_YAP, NRZ_YAP, MON_YAP, FEC_YAP)
 VALUES
+	('999888777', '999333222', 38.21, '20230211 10:00:01 PM'),
+	('999333222', '999888777', 43.10, '20240623 03:52:22 PM'),
+	('999333222', '999888777', 10.38,'20240321 01:14:01 AM'),
+	('999333222', '913344552', 193.23,'20231229 11:54:22 PM'),
 	('999888777', '999333222', 394.12, '20240623 09:54:01 PM'),
-	('999333222', '113344552', 37.21, '20230624 01:54:01 PM')
+	('999333222', '913344552', 37.21, '20230624 01:54:01 PM')
+GO
+
+INSERT INTO DATOS.DETALLECLIYAP
+VALUES
+(1,2,1),
+(2,1,2),
+(2,1,3),
+(2,3,4),
+(1,2,5),
+(2,3,6)
 GO
 
 -- CREAR PROCEDIMIENTOS ALMACENADOS
@@ -178,35 +186,54 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE SP_RealizarYapeo
+CREATE OR ALTER PROCEDURE SP_RealizarYapeo
 (
-	@numeroRealizante	char(9),
 	@numeroRecibiente	char(9),
+	@numeroRealizante	char(9),
 	@monto				FLOAT
 ) 
 AS
 BEGIN
-	DECLARE @id INT;
+	DECLARE @idRealizante INT;
+	DECLARE @idRecibiente INT;
 	DECLARE @saldoCuenta FLOAT;
+	DECLARE @idYape INT;
 
-	EXEC @id = FN_ObtenerID @numeroRealizante;
-	EXEC @saldoCuenta = FN_ObtenerSaldo @id;
-
-	IF(@saldoCuenta < @monto)
+	EXEC @idRealizante = FN_ObtenerID @numeroRealizante;
+	EXEC @idRecibiente = FN_ObtenerID @numeroRealizante;
+	EXEC @saldoCuenta = FN_ObtenerSaldo @idRealizante;
+	IF (@saldoCuenta IS NULL)
+		BEGIN
+			SELECT 'El número realizante tiene que estar activo para realizar un Yapeo' AS [Mensaje]
+		END
+	ELSE IF(@saldoCuenta < @monto)
 		BEGIN
 			SELECT 'Saldo Insuficiente' AS [Mensaje];
 			RETURN;
 		END
+	ELSE IF(@idRecibiente != NULL)
+		BEGIN
+			SELECT 'Numero no Encontrado' AS [Mensaje]
+			RETURN;
+		END
 	ELSE
 		BEGIN
-			SELECT @id as pe;
 			INSERT INTO DATOS.YAPE (NRC_YAP, NRZ_YAP, MON_YAP)
 			VALUES (@numeroRecibiente, @numeroRealizante, @monto);
+		END
+		BEGIN
+			SET @idYape = (SELECT TOP 1 Y.IDE_YAP
+						   FROM DATOS.YAPE AS Y
+						   ORDER BY Y.IDE_YAP DESC)
+		END
+		BEGIN
+			INSERT INTO DATOS.DETALLECLIYAP
+			VALUES(@idRecibiente, @idRealizante, @idYape)
 		END
 END
 GO
 
---SP_RealizarYapeo'999333222','999888777',900
+--SP_RealizarYapeo '999888777','999333222', 100
 
 CREATE OR ALTER PROCEDURE SP_ListarYapes
 (
@@ -278,6 +305,9 @@ BEGIN
 	FROM DATOS.YAPE AS Y
 	WHERE (Y.NRC_YAP = @numero OR Y.NRZ_YAP = @numero) AND CAST(Y.FEC_YAP AS date) = @fecha
 END
+GO
+
+SP_BuscarYapeXFecha 999888777, '2024-06-23'
 GO
 
 CREATE PROCEDURE SP_ObtenerNombre
