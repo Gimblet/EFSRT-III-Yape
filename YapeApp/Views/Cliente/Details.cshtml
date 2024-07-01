@@ -1,0 +1,72 @@
+﻿@model YapeApp.Models.Detalles
+
+@{
+    ViewBag.Title = "Detalles";
+}
+
+<h2>Detalles del Yape</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.IDE_YAP)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IDE_YAP)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NRC_YAP)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NRC_YAP)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NOM_REC)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NOM_REC)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NRZ_YAP)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NRZ_YAP)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NOM_REA)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NOM_REA)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MON_YAP)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MON_YAP)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fecha)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fecha)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Regresar", "Index", "Cliente", new {@class = "btn btn-secondary"})
+</p>

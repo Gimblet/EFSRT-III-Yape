@@ -164,6 +164,39 @@ namespace YapeApp.Controllers
             return saldo;
         }
 
+        public Detalles ObtenerDetallesYape(int id)
+        {
+            Detalles detalle = null;
+            try
+            {
+                SqlCommand cmd = new SqlCommand("SP_ObtenerDetallesYape", cnx);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@id", id);
+                cnx.Open();
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.Read())
+                {
+                    detalle = new Detalles();
+                    detalle.IDE_YAP = dr.GetInt32(0);
+                    detalle.NRC_YAP = dr.GetString(1);
+                    detalle.NOM_REC = dr.GetString(2);
+                    detalle.NRZ_YAP = dr.GetString(3);
+                    detalle.NOM_REA = dr.GetString(4);
+                    detalle.MON_YAP = dr.GetDouble(5);
+                    detalle.Fecha = dr.GetString(6);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                cnx.Close();
+            }
+            return detalle;
+        }
+
         // GET: Cliente
         public ActionResult Index(string mensaje)
         {
@@ -172,6 +205,12 @@ namespace YapeApp.Controllers
                 ViewBag.mensaje = mensaje;
             }
             return View(listarYapes());
+        }
+
+        public ActionResult Details(int id)
+        {
+            Detalles detalle = ObtenerDetallesYape(id);
+            return View(detalle);
         }
 
         public ActionResult ActionCerrarSesion()
@@ -191,7 +230,7 @@ namespace YapeApp.Controllers
 
         public ActionResult realizarYapeo(string mensaje)
         {
-            if(!mensaje.IsEmpty() && mensaje.Contains("Error"))
+            if (!mensaje.IsEmpty() && mensaje.Contains("Error"))
             {
                 ViewBag.error = mensaje;
                 return View();
