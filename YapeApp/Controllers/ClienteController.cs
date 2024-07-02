@@ -352,7 +352,7 @@ namespace YapeApp.Controllers
                             texto.Span(Session["NombreCompleto"].ToString()).Bold().FontSize(8);
                         });
 
-                        col.Item().PaddingVertical(11).Text("DETALLE DE YAPES").Bold().FontSize(12).AlignCenter();
+                        col.Item().PaddingVertical(11).Text("DETALLE DE YAPES").Bold().FontSize(12).AlignStart();
 
                         col.Item().BorderRight(1).BorderLeft(1).BorderBottom(1).BorderColor("#e0e0e0").Table(tabla =>
                         {
