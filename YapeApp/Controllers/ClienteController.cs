@@ -14,6 +14,7 @@ using YapeApp.Models;
 using QuestPDF.Previewer;
 using System.Web.WebPages;
 using System.Web.Razor.Parser.SyntaxTree;
+using System.IO;
 
 namespace YapeApp.Controllers
 {
@@ -265,8 +266,40 @@ namespace YapeApp.Controllers
             return File(pdf, "application/pdf", "ReporteYapes.pdf");
         }
 
+        double obtenerMontoTotalRecibido(List<Yape> lista)
+        {
+            double resultado = 0.0;
+            for (int i = 0; i < lista.Count(); i++)
+            {
+                if (lista[i].NRC_YAP.Equals(Session["Numero"]))
+                {
+                    resultado += lista[i].MON_YAP;
+                }
+            }
+            return resultado;
+        }
+        double obtenerMontoTotalDepositado(List<Yape> lista)
+        {
+            double resultado = 0.0;
+            for (int i = 0; i < lista.Count(); i++)
+            {
+                if (lista[i].NRZ_YAP.Equals(Session["Numero"]))
+                {
+                    resultado += lista[i].MON_YAP;
+                }
+            }
+            return resultado;
+        }
+
         IDocument GenerarPDF(List<Yape> lista)
         {
+            var stream = new FileStream(Server.MapPath("~/Content/Images/LogoYape.png"), FileMode.Open);
+            double montoTotalRecibido = obtenerMontoTotalRecibido(lista);
+            double montoTotalDepositado = obtenerMontoTotalDepositado(lista);
+            Math.Round(montoTotalRecibido, 2);
+            Math.Round(montoTotalDepositado, 2);
+            double montoTotal = montoTotalRecibido - montoTotalDepositado;
+
             return Document.Create(contenedor =>
             {
                 contenedor.Page(pagina =>
@@ -276,40 +309,52 @@ namespace YapeApp.Controllers
                     pagina.PageColor(Colors.White);
                     pagina.DefaultTextStyle(x => x.FontSize(20));
 
-                    pagina.Header().Row(fila =>
+                    pagina.Header().PaddingRight(25).PaddingLeft(25).ShowOnce().Row(fila =>
                     {
-                        fila.ConstantItem(120).Border(1).Height(85).Placeholder();
+                        fila.ConstantItem(55).Image(stream).FitArea();
+                        stream.Close();
 
                         fila.RelativeItem().AlignRight().Column(col =>
                         {
-                            col.Item().Text("YAPE").AlignCenter().Bold().FontSize(20);
                             col.Item().Text("RUC : 100059474831").Bold().AlignCenter().FontSize(10);
-                            col.Item().Text("Central Telefonica : (01)-049348").Bold().AlignStart().FontSize(10);
-                            col.Item().Text("E-Mail : atencionalcliente@yape.pe").Bold().AlignStart().FontSize(10);
+                            col.Item().Text("Central Telefonica : (01)-049348").Bold().AlignCenter().FontSize(10);
+                            col.Item().Text("E-Mail : atencionalcliente@yape.pe").Bold().AlignCenter().FontSize(10);
                         });
                     });
 
-                    pagina.Content().PaddingVertical(35).PaddingLeft(25).PaddingRight(25).Column(col =>
+                    pagina.Content().PaddingVertical(35).PaddingLeft(30).PaddingRight(30).Column(col =>
                     {
-                        col.Item().AlignLeft().Row(fila =>
+                        col.Item().Background("#f6e1f9").BorderBottom(1).BorderColor("#f6e1f9").PaddingHorizontal(10).PaddingTop(6).AlignLeft().Row(fila =>
                         {
-                            fila.ConstantItem(80).Text("Detalle").Bold().FontSize(12).AlignStart();
+                            fila.ConstantItem(80).Text("Detalle").Bold().FontColor("#742384").FontSize(10).AlignStart();
                             fila.RelativeItem().AlignRight().Text(texto =>
                             {
-                                texto.Span("Número de Recibo : ").Bold().FontSize(12);
-                                texto.Span(new Random().Next(1, 1000000000).ToString()).Bold().FontSize(12);
+                                texto.Span("N° de Recibo : ").Bold().FontSize(8);
+                                texto.Span(new Random().Next(1, 1000000000).ToString()).Bold().FontSize(8);
                             });
                         });
 
-                        col.Item().AlignRight().Height(20).Text(texto =>
+                        col.Item().Background("#f6e1f9").BorderBottom(1).BorderColor("#f6e1f9").PaddingHorizontal(10).PaddingBottom(3).AlignRight().Text(texto =>
                         {
-                            texto.Span("Fecha de Emisión : ").Bold().FontSize(12);
-                            texto.Span(DateTime.Now.ToShortDateString()).Bold().FontSize(12);
+                            texto.Span("Fecha de Emisión : ").Bold().FontSize(8);
+                            texto.Span(DateTime.Now.ToShortDateString()).Bold().FontSize(8);
                         });
 
-                        col.Item().PaddingTop(11).Text("DETALLE DE YAPES").Bold().FontSize(12).AlignCenter();
+                        col.Item().Background("#f6e1f9").BorderBottom(1).BorderColor("#f6e1f9").PaddingHorizontal(10).PaddingBottom(3).AlignRight().Text(texto =>
+                        {
+                            texto.Span("Teléfono del Cliente : ").Bold().FontSize(8);
+                            texto.Span(Session["Numero"].ToString()).Bold().FontSize(8);
+                        });
 
-                        col.Item().PaddingTop(10).Table(tabla =>
+                        col.Item().Background("#f6e1f9").PaddingHorizontal(10).PaddingBottom(6).AlignRight().Text(texto =>
+                        {
+                            texto.Span("Cliente : ").Bold().FontSize(8);
+                            texto.Span(Session["NombreCompleto"].ToString()).Bold().FontSize(8);
+                        });
+
+                        col.Item().PaddingVertical(11).Text("DETALLE DE YAPES").Bold().FontSize(12).AlignCenter();
+
+                        col.Item().BorderRight(1).BorderLeft(1).BorderBottom(1).BorderColor("#e0e0e0").Table(tabla =>
                         {
                             tabla.ColumnsDefinition(formato =>
                             {
@@ -323,8 +368,8 @@ namespace YapeApp.Controllers
                             tabla.Header(fila =>
                             {
                                 fila.Cell().Background("#742384").Padding(4).Text("ID").FontColor("#ffffff").Bold().FontSize(10).AlignCenter();
-                                fila.Cell().Background("#742384").Padding(4).Text("Número Recibidor").FontColor("#ffffff").Bold().FontSize(10).AlignCenter();
-                                fila.Cell().Background("#742384").Padding(4).Text("Número Realizador").FontColor("#ffffff").Bold().FontSize(10).AlignCenter();
+                                fila.Cell().Background("#742384").Padding(4).Text("Recibidor").FontColor("#ffffff").Bold().FontSize(10).AlignCenter();
+                                fila.Cell().Background("#742384").Padding(4).Text("Realizador").FontColor("#ffffff").Bold().FontSize(10).AlignCenter();
                                 fila.Cell().Background("#742384").Padding(4).Text("Monto").FontColor("#ffffff").Bold().FontSize(10).AlignCenter();
                                 fila.Cell().Background("#742384").Padding(4).Text("Fecha").FontColor("#ffffff").Bold().FontSize(10).AlignCenter();
                             });
@@ -338,7 +383,7 @@ namespace YapeApp.Controllers
                                     tabla.Cell().Row(e).Column(1).Background("#f0f0f0").Padding(5).Text(yape.IDE_YAP.ToString()).FontSize(10).AlignCenter();
                                     tabla.Cell().Row(e).Column(2).Background("#f0f0f0").Padding(5).Text(yape.NRC_YAP).FontSize(10).AlignCenter();
                                     tabla.Cell().Row(e).Column(3).Background("#f0f0f0").Padding(5).Text(yape.NRZ_YAP).FontSize(10).AlignCenter();
-                                    tabla.Cell().Row(e).Column(4).Background("#f0f0f0").Padding(5).Text(yape.MON_YAP.ToString()).FontSize(10).AlignCenter();
+                                    tabla.Cell().Row(e).Column(4).Background("#f0f0f0").Padding(5).Text(Math.Round(yape.MON_YAP,2).ToString()).FontSize(10).AlignCenter();
                                     tabla.Cell().Row(e).Column(5).Background("#f0f0f0").Padding(5).Text(yape.Fecha).FontSize(10).AlignCenter();
                                 }
                                 else
@@ -346,13 +391,15 @@ namespace YapeApp.Controllers
                                     tabla.Cell().Row(e).Column(1).Padding(5).Text(yape.IDE_YAP.ToString()).FontSize(10).AlignCenter();
                                     tabla.Cell().Row(e).Column(2).Padding(5).Text(yape.NRC_YAP).FontSize(10).AlignCenter();
                                     tabla.Cell().Row(e).Column(3).Padding(5).Text(yape.NRZ_YAP).FontSize(10).AlignCenter();
-                                    tabla.Cell().Row(e).Column(4).Padding(5).Text(yape.MON_YAP.ToString()).FontSize(10).AlignCenter();
+                                    tabla.Cell().Row(e).Column(4).Padding(5).Text(Math.Round(yape.MON_YAP,2).ToString()).FontSize(10).AlignCenter();
                                     tabla.Cell().Row(e).Column(5).Padding(5).Text(yape.Fecha).FontSize(10).AlignCenter();
                                 }
                             }
                         });
 
-                        col.Item().PaddingTop(15).PaddingHorizontal(15).Row(fila =>
+                        col.Item().PaddingBottom(15);
+
+                        col.Item().Background("#f0f0f0").PaddingTop(8).PaddingHorizontal(15).Row(fila =>
                         {
                             fila.ConstantItem(110).Text("Resumen").FontSize(10).Bold().AlignStart();
                             fila.RelativeItem().AlignRight().Text(texto =>
@@ -362,30 +409,32 @@ namespace YapeApp.Controllers
                             });
                         });
 
-                        col.Item().AlignRight().PaddingHorizontal(15).Column(interior =>
+                        col.Item().Background("#f0f0f0").AlignRight().PaddingHorizontal(15).Column(interior =>
                         {
                             interior.Item().Text(textoG =>
                             {
                                 textoG.Span("Monto Total Recibido : S/ ").FontSize(10);
-                                textoG.Span("").FontSize(10);
+                                textoG.Span(montoTotalRecibido.ToString()).FontSize(10);
                             });
                         });
 
-                        col.Item().AlignRight().PaddingHorizontal(15).Column(interior =>
+                        col.Item().Background("#f0f0f0").AlignRight().PaddingBottom(8).PaddingHorizontal(15).Column(interior =>
                         {
                             interior.Item().Text(textoG =>
                             {
-                                textoG.Span("Monto Total Realizado : S/ ").FontSize(10);
-                                textoG.Span("").FontSize(10);
+                                textoG.Span("Monto Total Depositado : S/ ").FontSize(10);
+                                textoG.Span(montoTotalDepositado.ToString()).FontSize(10);
                             });
                         });
 
-                        col.Item().PaddingTop(3).AlignRight().PaddingHorizontal(15).Column(subTotal =>
+                        col.Item().PaddingVertical(4);
+
+                        col.Item().Background("#742386").PaddingVertical(1).AlignRight().PaddingHorizontal(15).Column(subTotal =>
                         {
                             subTotal.Item().Text(textoG =>
                             {
-                                textoG.Span("SUB TOTAL : S/ ").FontSize(12).Bold();
-                                textoG.Span("").FontSize(12).Bold();
+                                textoG.Span("SUB TOTAL : S/ ").FontSize(12).FontColor("#ffffff").Bold();
+                                textoG.Span(montoTotal.ToString()).FontSize(12).FontColor("#ffffff").Bold();
                             });
                         });
 
