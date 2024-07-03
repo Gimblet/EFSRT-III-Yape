@@ -198,6 +198,30 @@ namespace YapeApp.Controllers
             }
             return detalle;
         }
+        double obtenerMontoTotalRecibido(List<Yape> lista)
+        {
+            double resultado = 0.0;
+            for (int i = 0; i < lista.Count(); i++)
+            {
+                if (lista[i].NRC_YAP.Equals(Session["Numero"]))
+                {
+                    resultado += lista[i].MON_YAP;
+                }
+            }
+            return resultado;
+        }
+        double obtenerMontoTotalDepositado(List<Yape> lista)
+        {
+            double resultado = 0.0;
+            for (int i = 0; i < lista.Count(); i++)
+            {
+                if (lista[i].NRZ_YAP.Equals(Session["Numero"]))
+                {
+                    resultado += lista[i].MON_YAP;
+                }
+            }
+            return resultado;
+        }
 
         // GET: Cliente
         public ActionResult Index(string mensaje)
@@ -227,6 +251,7 @@ namespace YapeApp.Controllers
         }
         public ActionResult ActionFiltrarYapesXFecha(string fecha)
         {
+            Session["fecha"] = fecha;
             return View(filtrarYapesXFecha(fecha));
         }
 
@@ -258,37 +283,21 @@ namespace YapeApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult ActionPDF()
+        public ActionResult ActionPDFxFecha()
         {
-            List<Yape> lista = listarYapes();
+            List<Yape> lista = filtrarYapesXFecha(Session["fecha"].ToString());
             var placeholder = GenerarPDF(lista);
             var pdf = placeholder.GeneratePdf();
             return File(pdf, "application/pdf", "ReporteYapes.pdf");
         }
 
-        double obtenerMontoTotalRecibido(List<Yape> lista)
+        [HttpGet]
+        public ActionResult ActionPDF(string fecha)
         {
-            double resultado = 0.0;
-            for (int i = 0; i < lista.Count(); i++)
-            {
-                if (lista[i].NRC_YAP.Equals(Session["Numero"]))
-                {
-                    resultado += lista[i].MON_YAP;
-                }
-            }
-            return resultado;
-        }
-        double obtenerMontoTotalDepositado(List<Yape> lista)
-        {
-            double resultado = 0.0;
-            for (int i = 0; i < lista.Count(); i++)
-            {
-                if (lista[i].NRZ_YAP.Equals(Session["Numero"]))
-                {
-                    resultado += lista[i].MON_YAP;
-                }
-            }
-            return resultado;
+            List<Yape> lista = listarYapes();
+            var placeholder = GenerarPDF(lista);
+            var pdf = placeholder.GeneratePdf();
+            return File(pdf, "application/pdf", "ReporteYapes.pdf");
         }
 
         IDocument GenerarPDF(List<Yape> lista)

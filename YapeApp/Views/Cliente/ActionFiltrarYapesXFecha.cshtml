@@ -23,7 +23,7 @@
         </div>
         <div class="col-auto row h-auto ms-5 flex-fill gap-3">
             <div class="col-auto">
-                @Html.ActionLink("Exportar Registros a PDF", "ActionPDF", "Cliente", new { @class = "btn btn-primary" })
+                @Html.ActionLink("Exportar Registros a PDF", "ActionPDFxFecha", "Cliente", new { @class = "btn btn-primary" })
             </div>
             @using (Html.BeginForm("ActionFiltrarYapesXFecha", "Cliente", FormMethod.Post, new { @class = "w-auto col-auto h-auto gap-1" }))
             {
