@@ -24,7 +24,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.NRC_YAP, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.NRC_YAP, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.NRC_YAP, new { htmlAttributes = new { @class = "form-control", minLength = 9, maxLegth = 9 } })
                 @Html.ValidationMessageFor(model => model.NRC_YAP, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -32,7 +32,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.MON_YAP, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.MON_YAP, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.MON_YAP, new { htmlAttributes = new { @class = "form-control", minLength = 1 } })
                 @Html.ValidationMessageFor(model => model.MON_YAP, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -42,4 +42,8 @@
             @Html.ActionLink("Cancelar", "Index", "Cliente", new { @class = "btn btn-secondary" })
         </div>
     </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
 }

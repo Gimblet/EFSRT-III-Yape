@@ -8,6 +8,7 @@
 
 @using (Html.BeginForm("ActionLogin", "Login", FormMethod.Post))
 {
+    @Html.AntiForgeryToken()
     <div class="container">
         @if (ViewBag.UsuarioInvalido != null)
         {
@@ -23,16 +24,22 @@
         }
         <div class="form-group">
             @Html.Label("Número")
-            @Html.TextBoxFor(Model => Model.NUM_CLI, "Numero", new { @class = "form-control" })
+            @Html.TextBoxFor(Model => Model.NUM_CLI, "Numero", new { @class = "form-control", maxLength = 9, minLength = 9 })
+            @Html.ValidationMessageFor(Model => Model.NUM_CLI, "", new {@class = "text-danger"})
         </div>
         <div class="form-group">
             @Html.Label("Clave")
-            @Html.PasswordFor(Model => Model.CLA_CLI, new { @class = "form-control" })
+            @Html.PasswordFor(Model => Model.CLA_CLI, new { @class = "form-control", minLength = 1 })
+            @Html.ValidationMessageFor(Model => Model.CLA_CLI, "", new {@class = "text-danger"})
         </div>
         <br />
         <div class="btn-group">
             <button type="submit" class="btn btn-primary">Ingresar</button>
         </div>
     </div>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
 }
 
