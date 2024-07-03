@@ -1,9 +1,9 @@
 ﻿@model YapeApp.Models.Cliente
 
 @{
-    ViewBag.Title = "Iniciar Sesión";
     Layout = null;
 }
+
 @Styles.Render("~/Content/css")
 @Scripts.Render("~/bundles/modernizr")
 
@@ -40,13 +40,13 @@
                 border-color: #4b0082;
             }
     </style>
+    <title>Yape - Iniciar Sesión</title>
 </head>
 
 <body>
     <div class="login-container">
 
         <h2 class="text-center">Iniciar Sesión</h2>
-
 
         @using (Html.BeginForm("ActionLogin", "Login", FormMethod.Post))
         {
@@ -75,7 +75,7 @@
                     @Html.ValidationMessageFor(Model => Model.CLA_CLI, "", new { @class = "text-danger" })
                 </div>
                 <br />
-                <div class="form-group">
+                <div class="btn-group">
                     <button type="submit" class="btn btn-primary">Ingresar</button>
                 </div>
             </div>
