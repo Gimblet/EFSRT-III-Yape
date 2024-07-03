@@ -310,9 +310,10 @@ namespace YapeApp.Controllers
             var stream = new FileStream(Server.MapPath("~/Content/Images/LogoYape.png"), FileMode.Open);
             double montoTotalRecibido = obtenerMontoTotalRecibido(lista);
             double montoTotalDepositado = obtenerMontoTotalDepositado(lista);
-            Math.Round(montoTotalRecibido, 2);
-            Math.Round(montoTotalDepositado, 2);
+            montoTotalRecibido =  Math.Round(montoTotalRecibido, 2);
+            montoTotalDepositado = Math.Round(montoTotalDepositado, 2);
             double montoTotal = montoTotalRecibido - montoTotalDepositado;
+            montoTotal = Math.Round(montoTotal, 2);
 
             return Document.Create(contenedor =>
             {
