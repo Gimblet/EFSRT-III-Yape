@@ -36,47 +36,57 @@
         </div>
     </div>
 </div>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.IDE_YAP)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.NRC_YAP)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.NRZ_YAP)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.MON_YAP)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Fecha)
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
+@if (ViewBag.error != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.error
+    </div>
+    @Html.ActionLink("Regresar al listado principal", "Index", "Cliente", new {@class = "btn btn-secondary"})
+}
+else
+{
+    <table class="table">
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IDE_YAP)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NRC_YAP)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NRZ_YAP)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MON_YAP)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Fecha)
-            </td>
-            <td>
-                @Html.ActionLink("Detalles", "Details", new { id = item.IDE_YAP })
-            </td>
+            <th>
+                @Html.DisplayNameFor(model => model.IDE_YAP)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NRC_YAP)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NRZ_YAP)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MON_YAP)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Fecha)
+            </th>
+            <th></th>
         </tr>
-    }
-</table>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IDE_YAP)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NRC_YAP)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NRZ_YAP)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MON_YAP)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fecha)
+                </td>
+                <td>
+                    @Html.ActionLink("Detalles", "Details", new { id = item.IDE_YAP })
+                </td>
+            </tr>
+        }
+    </table>
+}

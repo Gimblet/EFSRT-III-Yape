@@ -252,7 +252,12 @@ namespace YapeApp.Controllers
         public ActionResult ActionFiltrarYapesXFecha(string fecha)
         {
             Session["fecha"] = fecha;
-            return View(filtrarYapesXFecha(fecha));
+            List<Yape> listarYapes = filtrarYapesXFecha(fecha);
+            if(listarYapes.Count() == 0)
+            {
+                ViewBag.error = "No se encontraron yapes, verifique la fecha seleccionada";
+            }
+            return View(listarYapes);
         }
 
         public ActionResult realizarYapeo(string mensaje)
