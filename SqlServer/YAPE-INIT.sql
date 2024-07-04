@@ -273,6 +273,7 @@ BEGIN
 		END	
 		BEGIN
 			UPDATE LOGINS.CLIENTE SET SAL_CLI = @saldoCuenta - @monto
+			WHERE IDE_CLI = @idRealizante
 		END
 END
 GO
