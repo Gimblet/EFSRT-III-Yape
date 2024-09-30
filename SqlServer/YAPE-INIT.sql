@@ -25,7 +25,7 @@ CREATE TABLE LOGINS.CLIENTE
 	NUM_CLI		CHAR(9)			NOT NULL UNIQUE,
 	SAL_CLI		FLOAT			NOT NULL DEFAULT 0.0,
 	CLA_CLI		VARCHAR(100)	NOT NULL,
-	CHECK(SAL_CLI > 0) 
+	CHECK(SAL_CLI >= 0) 
 )
 GO
 
@@ -130,6 +130,90 @@ GO
 
 -- CREAR PROCEDIMIENTOS ALMACENADOS
 
+CREATE FUNCTION FN_BuscarDNI
+(
+	@dni CHAR(9)
+)
+RETURNS CHAR(9)
+AS
+BEGIN
+	DECLARE @resultado CHAR(9);
+
+	SELECT @resultado = C.DNI_CLI
+	FROM LOGINS.CLIENTE AS C
+	WHERE C.DNI_CLI = @dni;
+
+	RETURN @resultado;
+END
+GO
+
+CREATE FUNCTION FN_BuscarTelefono
+(
+	@numero INT
+)
+RETURNS INT
+AS
+BEGIN
+	DECLARE @resultado INT;
+
+	SELECT @resultado = C.NUM_CLI
+	FROM LOGINS.CLIENTE AS C
+	WHERE C.NUM_CLI = @numero
+
+	RETURN @resultado;
+END
+GO
+
+CREATE FUNCTION FN_ObtenerID
+(
+	@numero	INT
+)
+RETURNS INT
+AS
+BEGIN
+	DECLARE @id INT;
+
+	SELECT @id = C.IDE_CLI
+	FROM LOGINS.CLIENTE C
+	WHERE C.NUM_CLI = @numero;
+
+	RETURN @id;
+END
+GO
+
+CREATE OR ALTER PROCEDURE SP_RegistrarCliente(
+	@dni		CHAR(9),
+	@nombre		VARCHAR(50),
+	@apellido	VARCHAR(50),
+	@numero		CHAR(9),
+	@clave		VARCHAR(100) 
+)
+AS
+BEGIN
+	DECLARE @existeDNI CHAR(9);
+	DECLARE @existeNumero INT;
+
+	EXEC @existeDNI = FN_BuscarDNI @dni;
+	EXEC @existeNumero = FN_BuscarTelefono @numero;
+
+	IF (@existeDNI IS NOT NULL)
+		BEGIN
+			SELECT 'ERROR, El DNI ingresado ya se encuentra registrado' AS [Mensaje]
+			RETURN;
+		END
+	ELSE IF (@existeNumero IS NOT NULL)
+		BEGIN
+			SELECT 'ERROR, El numero de Telefono ingresado ya se encuentra registrado' AS [Mensaje]
+			RETURN;
+		END
+	ELSE
+		BEGIN
+			INSERT INTO LOGINS.CLIENTE (DNI_CLI, NOM_CLI, APE_CLI, NUM_CLI, CLA_CLI)
+			VALUES (@dni, @nombre, @apellido, @numero, @clave)
+		END
+END
+GO
+
 CREATE PROCEDURE SP_ValidarInicioSesion
 (
 	@numero CHAR(9),
@@ -202,23 +286,6 @@ BEGIN
 	WHERE U.IDE_CLI = @id;
 
 	RETURN @saldo;
-END
-GO
-
-CREATE FUNCTION FN_ObtenerID
-(
-	@numero	INT
-)
-RETURNS INT
-AS
-BEGIN
-	DECLARE @id INT;
-
-	SELECT @id = C.IDE_CLI
-	FROM LOGINS.CLIENTE C
-	WHERE C.NUM_CLI = @numero;
-
-	RETURN @id;
 END
 GO
 
