@@ -181,6 +181,28 @@ BEGIN
 END
 GO
 
+CREATE OR ALTER PROCEDURE SP_BuscarDNI(
+	@dni CHAR(9)
+)
+AS
+BEGIN
+	SELECT C.DNI_CLI 
+	FROM LOGINS.CLIENTE AS C
+	WHERE C.DNI_CLI = @dni
+END
+GO
+
+CREATE OR ALTER PROCEDURE SP_BuscarNumero(
+	@numero CHAR(9)
+)
+AS
+BEGIN
+	SELECT C.NUM_CLI 
+	FROM LOGINS.CLIENTE AS C
+	WHERE C.NUM_CLI = @numero
+END
+GO
+
 CREATE OR ALTER PROCEDURE SP_RegistrarCliente(
 	@dni		CHAR(9),
 	@nombre		VARCHAR(50),
@@ -308,7 +330,7 @@ BEGIN
 
 	IF (@saldoCuenta IS NULL)
 		BEGIN
-			SELECT 'Ocurrió un problema, vuelva a iniciar sesión' AS [Mensaje]
+			SELECT 'Ocurriï¿½ un problema, vuelva a iniciar sesiï¿½n' AS [Mensaje]
 			RETURN;
 		END
 	ELSE IF(@saldoCuenta < @monto)

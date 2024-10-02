@@ -1,0 +1,9 @@
+@{
+    ViewBag.Title = "Index";
+}
+<main aria-labelledby="title">
+    <section style="max-width: 1920px">
+       <img src="~/Content/Images/banner.png" style="max-width: auto"/>
+    </section>
+
+</main>

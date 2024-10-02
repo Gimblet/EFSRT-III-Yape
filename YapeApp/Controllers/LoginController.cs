@@ -16,6 +16,36 @@ namespace YapeApp.Controllers
         public static string Cadena = ConfigurationManager.ConnectionStrings["Cadena"].ConnectionString;
         SqlConnection cnx = new SqlConnection(Cadena);
 
+        public string registrarCliente(Cliente datos)
+        {
+            string mensaje = "";
+            if (esDNIRegistrado(datos))
+            {
+                mensaje = "El DNI ya se encuentra registrado";
+            }
+            else if (esNumeroRegistrado(datos))
+            {
+                mensaje = "El numero ya se encuentra registrado";
+            }
+            else
+            {
+                SqlCommand cmd = new SqlCommand("SP_RegistrarCliente", cnx);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@dni", datos.DNI_CLI);
+                cmd.Parameters.AddWithValue("@nombre", datos.NOM_CLI);
+                cmd.Parameters.AddWithValue("@apellido", datos.APE_CLI);
+                cmd.Parameters.AddWithValue("@numero", datos.NUM_CLI);
+                cmd.Parameters.AddWithValue("@clave", datos.CLA_CLI);
+                cnx.Open();
+                cmd.ExecuteNonQuery();
+                cnx.Close();
+                
+                AlmacenarDatos(datos);
+                mensaje = "Registrado exitosamente";
+            }
+            return mensaje;
+        }
+
         public string Login(Cliente datosRecibidos)
         {
             Cliente usuarioValido = validarLogin(datosRecibidos);
@@ -62,6 +92,49 @@ namespace YapeApp.Controllers
             dr.Close();
             return cliente;
         }
+
+        public Boolean esDNIRegistrado(Cliente datos)
+        {
+            Boolean respuesta = true;
+            SqlCommand cmd = new SqlCommand("SP_BuscarDNI", cnx);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@id", datos.DNI_CLI);
+            cnx.Open();
+            SqlDataReader rd = cmd.ExecuteReader();
+            if (rd.Read())
+            {
+                respuesta = true;
+            }
+            else
+            {
+                respuesta = false;
+            }
+            rd.Close();
+            cnx.Close();
+            return respuesta;
+        }
+
+        public Boolean esNumeroRegistrado(Cliente datos)
+        {
+            Boolean respuesta = true;
+            SqlCommand cmd = new SqlCommand("SP_BuscarNumero", cnx);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@numero", datos.NUM_CLI);
+            cnx.Open();
+            SqlDataReader rd = cmd.ExecuteReader();
+            if (rd.Read())
+            {
+                respuesta = true;
+            }
+            else
+            {
+                respuesta = false;
+            }
+            rd.Close();
+            cnx.Close();
+            return respuesta;
+        }
+
         public int verificarSesionAnterior(Cliente id)
         {
             int resultado = 0;
@@ -178,6 +251,22 @@ namespace YapeApp.Controllers
         }
 
         [HttpPost]
+        public ActionResult ActionRegistrar(Cliente datosRecibidos)
+        {
+            string resultado = registrarCliente(datosRecibidos);
+            if(resultado.Contains("Ya se encuentra registrado"))
+            {
+                ViewBag.Mensaje = resultado;
+                return View();
+            }
+            else
+            {
+                ViewBag.Mensaje = resultado;
+                return View("Cliente/Index");
+            }
+        }
+
+        [HttpPost]
         public ActionResult ActionLogin(Cliente datosRecibidos)
         {
             string respuesta = Login(datosRecibidos);
@@ -191,5 +280,6 @@ namespace YapeApp.Controllers
                 return View();
             }
         }
+
     }
 }
