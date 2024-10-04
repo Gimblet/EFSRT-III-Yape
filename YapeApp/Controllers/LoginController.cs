@@ -8,6 +8,7 @@ using System.Data.Sql;
 using System.Data;
 using YapeApp.Models;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace YapeApp.Controllers
 {
@@ -39,8 +40,7 @@ namespace YapeApp.Controllers
                 cnx.Open();
                 cmd.ExecuteNonQuery();
                 cnx.Close();
-                
-                AlmacenarDatos(datos);
+
                 mensaje = "Registrado exitosamente";
             }
             return mensaje;
@@ -53,15 +53,9 @@ namespace YapeApp.Controllers
             {
                 // Si verificarSesionAnterior es igual a 1, significa que ya habia un usuario logeado con las credenciales dadas
                 if (verificarSesionAnterior(usuarioValido) == 1) { eliminarSesion(usuarioValido); }
-                SqlCommand cmd = new SqlCommand("SP_AgregarNuevaSesion", cnx);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@id", usuarioValido.IDE_CLI);
-                cmd.Parameters.AddWithValue("@numero", usuarioValido.NUM_CLI);
-                cnx.Open();
-                cmd.ExecuteNonQuery();
-                cnx.Close();
 
-                AlmacenarDatos(usuarioValido);
+                agregarNuevaSesion(usuarioValido);
+                AlmacenarDatos(datosRecibidos);
 
                 return "Valido";
             }
@@ -92,13 +86,23 @@ namespace YapeApp.Controllers
             dr.Close();
             return cliente;
         }
+        public void agregarNuevaSesion(Cliente data)
+        {
+            SqlCommand cmd = new SqlCommand("SP_AgregarNuevaSesion", cnx);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@id", data.IDE_CLI);
+            cmd.Parameters.AddWithValue("@numero", data.NUM_CLI);
+            cnx.Open();
+            cmd.ExecuteNonQuery();
+            cnx.Close();
+        }
 
         public Boolean esDNIRegistrado(Cliente datos)
         {
             Boolean respuesta = true;
             SqlCommand cmd = new SqlCommand("SP_BuscarDNI", cnx);
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@id", datos.DNI_CLI);
+            cmd.Parameters.AddWithValue("@dni", datos.DNI_CLI);
             cnx.Open();
             SqlDataReader rd = cmd.ExecuteReader();
             if (rd.Read())
@@ -250,11 +254,16 @@ namespace YapeApp.Controllers
             return View();
         }
 
+        public ActionResult ActionRegistrar()
+        {
+            return View();
+        }
+
         [HttpPost]
         public ActionResult ActionRegistrar(Cliente datosRecibidos)
         {
             string resultado = registrarCliente(datosRecibidos);
-            if(resultado.Contains("Ya se encuentra registrado"))
+            if (resultado.Contains("Ya se encuentra registrado"))
             {
                 ViewBag.Mensaje = resultado;
                 return View();
@@ -262,7 +271,7 @@ namespace YapeApp.Controllers
             else
             {
                 ViewBag.Mensaje = resultado;
-                return View("Cliente/Index");
+                return View("~/Views/Login/ActionLogin.cshtml");
             }
         }
 

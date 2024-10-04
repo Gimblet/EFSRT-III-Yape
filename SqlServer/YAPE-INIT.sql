@@ -236,6 +236,9 @@ BEGIN
 END
 GO
 
+SP_RegistrarCliente '847536317', 'Jesus', 'Torres', '948321444', 'jesuhino32'
+GO
+
 CREATE PROCEDURE SP_ValidarInicioSesion
 (
 	@numero CHAR(9),
@@ -322,11 +325,13 @@ BEGIN
 	DECLARE @idRealizante INT;
 	DECLARE @idRecibiente INT;
 	DECLARE @saldoCuenta FLOAT;
+	DECLARE @saldoCuentaRecibiente FLOAT;
 	DECLARE @idYape INT;
 
 	EXEC @idRecibiente = FN_ObtenerID @numeroRecibiente;
 	EXEC @idRealizante = FN_ObtenerID @numeroRealizante;
 	EXEC @saldoCuenta = FN_ObtenerSaldo @idRealizante;
+	EXEC @saldoCuentaRecibiente = FN_ObtenerSaldo @idRecibiente;
 
 	IF (@saldoCuenta IS NULL)
 		BEGIN
@@ -361,8 +366,12 @@ BEGIN
 			VALUES(@idRecibiente, @idRealizante, @idYape)
 		END	
 		BEGIN
-			UPDATE LOGINS.CLIENTE SET SAL_CLI = @saldoCuenta - @monto
+			UPDATE LOGINS.CLIENTE SET SAL_CLI = (@saldoCuenta - @monto)
 			WHERE IDE_CLI = @idRealizante
+		END
+		BEGIN
+			UPDATE LOGINS.CLIENTE SET SAL_CLI = (@saldoCuentaRecibiente + @monto)
+			WHERE IDE_CLI = @idRecibiente
 		END
 END
 GO
@@ -499,7 +508,7 @@ CREATE PROCEDURE Sp_ObtenerIDClientexNumero
 AS
 BEGIN
 	SELECT U.IDE_CLI
-	FROM LOGINS.USUARIOSACTIVOS U
+	FROM LOGINS.CLIENTE U
 	WHERE U.NUM_CLI = @numero
 END
 GO
@@ -512,7 +521,7 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE SP_ObtenerDetallesYape
+CREATE OR ALTER PROCEDURE SP_ObtenerDetallesYape
 (
 	@id INT
 )
@@ -553,6 +562,6 @@ BEGIN
 	FROM DATOS.YAPE AS Y
 	JOIN DATOS.DETALLECLIYAP AS DT ON Y.IDE_YAP = DT.IDE_YAP
 	JOIN LOGINS.CLIENTE AS C ON C.IDE_CLI = DT.IDE_CLI_REA
-	WHERE Y.IDE_YAP = 7
+	WHERE Y.IDE_YAP = @id
 END
 GO

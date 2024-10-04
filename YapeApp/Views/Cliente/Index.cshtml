@@ -62,27 +62,39 @@
         <th></th>
     </tr>
 
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IDE_YAP)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NRC_YAP)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NRZ_YAP)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MON_YAP)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Fecha)
-            </td>
-            <td>
-                @Html.ActionLink("Detalles", "Details", new { id = item.IDE_YAP })
-            </td>
-        </tr>
+    @{
+        if (Model != null)
+        {
+
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IDE_YAP)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NRC_YAP)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NRZ_YAP)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MON_YAP)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Detalles", "Details", new { id = item.IDE_YAP })
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6">No hay registros</td>
+            </tr>
+        }
     }
 </table>

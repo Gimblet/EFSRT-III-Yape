@@ -32,5 +32,15 @@ namespace YapeApp.Models
         [Required]
         [Display(Name = "Fecha", Order = 5)]
         public string Fecha { get; set; }
+
+        public Yape()
+        {
+            IDE_YAP = 0;
+            NRC_YAP = "";
+            NRZ_YAP = "";
+            MON_YAP = 0.0;
+            FEC_YAP = new DateTime();
+            Fecha = "";
+        }
     }
 }
