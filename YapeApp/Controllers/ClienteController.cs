@@ -15,6 +15,11 @@ using QuestPDF.Previewer;
 using System.Web.WebPages;
 using System.Web.Razor.Parser.SyntaxTree;
 using System.IO;
+using System.Threading.Tasks;
+using System.Web.UI.WebControls;
+using System.Web.UI;
+using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace YapeApp.Controllers
 {
@@ -320,7 +325,7 @@ namespace YapeApp.Controllers
                 contenedor.Page(pagina =>
                 {
                     pagina.Size(PageSizes.A4);
-                    pagina.Margin(15, Unit.Millimetre);
+                    pagina.Margin(15, QuestPDF.Infrastructure.Unit.Millimetre);
                     pagina.PageColor(Colors.White);
                     pagina.DefaultTextStyle(x => x.FontSize(20));
 
@@ -464,6 +469,61 @@ namespace YapeApp.Controllers
                     });
                 });
             });
+        }
+
+        [HttpGet]
+        public ActionResult ActionExportarExcel()
+        {
+            List<Yape> listaYapes = listarYapes();
+            return ExportarExcel(listaYapes);
+        }
+
+        public ActionResult ExportarExcel(List<Yape> lista)
+        {
+            DataTable dataTable = new DataTable();
+            dataTable.TableName = "ReporteYapes";
+            dataTable.Clear();
+            dataTable.Columns.Add("ID");
+            dataTable.Columns.Add("Numero Recibidor");
+            dataTable.Columns.Add("Numero Realizador");
+            dataTable.Columns.Add("Monto");
+            dataTable.Columns.Add("Fecha");
+
+            for(int i = 0; lista.Count() > i; i++)
+            {
+                DataRow dr = dataTable.NewRow();
+                dr["ID"] = lista[i].IDE_YAP.ToString();
+                dr["Numero Recibidor"] = lista[i].NRC_YAP;
+                dr["Numero Realizador"] = lista[i].NRZ_YAP;
+                dr["Monto"] = lista[i].MON_YAP.ToString();
+                dr["Fecha"] = lista[i].Fecha;
+                dataTable.Rows.Add(dr);
+            }
+
+            using (XLWorkbook xls = new XLWorkbook())
+            {
+                xls.Worksheets.Add(dataTable);
+                using(MemoryStream st = new MemoryStream())
+                {
+                    xls.SaveAs(st);
+                    return File(st.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                }
+            }
+            //var gv = new GridView();
+            //gv.DataSource = lista;
+            //gv.DataBind();
+            //Response.ClearContent();
+            //Response.Buffer = true;
+            //Response.AddHeader("content-disposition", "attachment; filename=ReporteYapes.xls");
+            //Response.ContentType = "application/ms-excel";
+            //Response.Charset = "";
+            //StringWriter sw = new StringWriter();
+            //HtmlTextWriter htw = new HtmlTextWriter(sw);
+            //gv.RenderControl(htw);
+            //Response.Output.Write(sw.ToString());
+            //Response.Flush();
+            //Response.End();
+            //return View("Index");
         }
     }
 }

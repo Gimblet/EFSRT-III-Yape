@@ -31,6 +31,9 @@
             <div class="col-auto">
                 @Html.ActionLink("Exportar Registros a PDF", "ActionPDF", "Cliente", new { @class = "btn btn-primary" })
             </div>
+            <div class="col-auto">
+                @Html.ActionLink("Exportar Registros a Excel", "ActionExportarExcel", "Cliente", new { @class = "btn btn-primary" })
+            </div>
             @using (Html.BeginForm("ActionFiltrarYapesXFecha", "Cliente", FormMethod.Post, new { @class = "w-auto col-auto h-auto gap-1" }))
             {
                 <input type="date" name="fecha" style="border-radius: 5.5px; margin-top: auto" />
