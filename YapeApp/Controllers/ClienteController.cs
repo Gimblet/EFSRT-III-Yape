@@ -501,6 +501,7 @@ namespace YapeApp.Controllers
 
             for (int i = 0; meses.Length > i; i++)
             {
+                var ws = xls.AddWorksheet();
                 DataTable dataTable = new DataTable();
                 dataTable.TableName = meses[i];
                 dataTable.Clear();
@@ -516,15 +517,25 @@ namespace YapeApp.Controllers
                     if (lista[a].Fecha.Contains(meses[i]))
                     {
                         DataRow dr = dataTable.NewRow();
-                        dr["ID"] = lista[a].IDE_YAP.ToString();
-                        dr["Numero Recibidor"] = lista[a].NRC_YAP;
-                        dr["Numero Realizador"] = lista[a].NRZ_YAP;
-                        dr["Monto"] = lista[a].MON_YAP.ToString();
+                        dr["ID"] = lista[a].IDE_YAP;
+                        dr["Numero Recibidor"] = int.Parse(lista[a].NRC_YAP);
+                        dr["Numero Realizador"] = int.Parse(lista[a].NRZ_YAP);
+                        dr["Monto"] = lista[a].MON_YAP;
                         dr["Fecha"] = lista[a].Fecha;
                         dataTable.Rows.Add(dr);
                     }
                 }
-                xls.Worksheets.Add(dataTable);
+
+                ws.Name = meses[i];
+                ws.ColumnWidth = 32;
+                ws.Cell("D2").Style.Font.SetFontSize(22);
+                ws.Cell("D2").Value = "Reporte " + meses[i];
+
+                var tabla = ws.Cell("B4").InsertTable(dataTable);
+
+                tabla.Theme = XLTableTheme.TableStyleMedium5;
+                tabla.SetShowHeaderRow(true);
+                tabla.SetShowAutoFilter(false);
             }
 
             using (MemoryStream st = new MemoryStream())
