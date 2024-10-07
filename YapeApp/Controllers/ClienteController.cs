@@ -258,7 +258,7 @@ namespace YapeApp.Controllers
         {
             Session["fecha"] = fecha;
             List<Yape> listarYapes = filtrarYapesXFecha(fecha);
-            if(listarYapes.Count() == 0)
+            if (listarYapes.Count() == 0)
             {
                 ViewBag.error = "No se encontraron yapes, verifique la fecha seleccionada";
             }
@@ -315,7 +315,7 @@ namespace YapeApp.Controllers
             var stream = new FileStream(Server.MapPath("~/Content/Images/LogoYape.png"), FileMode.Open);
             double montoTotalRecibido = obtenerMontoTotalRecibido(lista);
             double montoTotalDepositado = obtenerMontoTotalDepositado(lista);
-            montoTotalRecibido =  Math.Round(montoTotalRecibido, 2);
+            montoTotalRecibido = Math.Round(montoTotalRecibido, 2);
             montoTotalDepositado = Math.Round(montoTotalDepositado, 2);
             double montoTotal = montoTotalRecibido - montoTotalDepositado;
             montoTotal = Math.Round(montoTotal, 2);
@@ -326,7 +326,7 @@ namespace YapeApp.Controllers
                 {
                     pagina.Size(PageSizes.A4);
                     pagina.Margin(15, QuestPDF.Infrastructure.Unit.Millimetre);
-                    pagina.PageColor(Colors.White);
+                    pagina.PageColor(QuestPDF.Helpers.Colors.White);
                     pagina.DefaultTextStyle(x => x.FontSize(20));
 
                     pagina.Header().PaddingRight(25).PaddingLeft(25).ShowOnce().Row(fila =>
@@ -403,7 +403,7 @@ namespace YapeApp.Controllers
                                     tabla.Cell().Row(e).Column(1).Background("#f0f0f0").Padding(5).Text(yape.IDE_YAP.ToString()).FontSize(10).AlignCenter();
                                     tabla.Cell().Row(e).Column(2).Background("#f0f0f0").Padding(5).Text(yape.NRC_YAP).FontSize(10).AlignCenter();
                                     tabla.Cell().Row(e).Column(3).Background("#f0f0f0").Padding(5).Text(yape.NRZ_YAP).FontSize(10).AlignCenter();
-                                    tabla.Cell().Row(e).Column(4).Background("#f0f0f0").Padding(5).Text(Math.Round(yape.MON_YAP,2).ToString()).FontSize(10).AlignCenter();
+                                    tabla.Cell().Row(e).Column(4).Background("#f0f0f0").Padding(5).Text(Math.Round(yape.MON_YAP, 2).ToString()).FontSize(10).AlignCenter();
                                     tabla.Cell().Row(e).Column(5).Background("#f0f0f0").Padding(5).Text(yape.Fecha).FontSize(10).AlignCenter();
                                 }
                                 else
@@ -411,7 +411,7 @@ namespace YapeApp.Controllers
                                     tabla.Cell().Row(e).Column(1).Padding(5).Text(yape.IDE_YAP.ToString()).FontSize(10).AlignCenter();
                                     tabla.Cell().Row(e).Column(2).Padding(5).Text(yape.NRC_YAP).FontSize(10).AlignCenter();
                                     tabla.Cell().Row(e).Column(3).Padding(5).Text(yape.NRZ_YAP).FontSize(10).AlignCenter();
-                                    tabla.Cell().Row(e).Column(4).Padding(5).Text(Math.Round(yape.MON_YAP,2).ToString()).FontSize(10).AlignCenter();
+                                    tabla.Cell().Row(e).Column(4).Padding(5).Text(Math.Round(yape.MON_YAP, 2).ToString()).FontSize(10).AlignCenter();
                                     tabla.Cell().Row(e).Column(5).Padding(5).Text(yape.Fecha).FontSize(10).AlignCenter();
                                 }
                             }
@@ -471,59 +471,67 @@ namespace YapeApp.Controllers
             });
         }
 
+        public string[] filtrarMeses(List<Yape> listaYapes)
+        {
+            string[] listaReferencia = new string[12] { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
+            List<string> lista = new List<string>();
+
+            for (int i = 0; i < 12; i++)
+            {
+                if (listaYapes.Any(a => a.Fecha.Contains(listaReferencia[i])))
+                {
+                    lista.Add(listaReferencia[i]);
+                }
+            }
+
+            return lista.ToArray();
+        }
+
         [HttpGet]
         public ActionResult ActionExportarExcel()
         {
             List<Yape> listaYapes = listarYapes();
-            return ExportarExcel(listaYapes);
+            string[] listaMeses = filtrarMeses(listaYapes);
+            return ExportarExcel(listaYapes, listaMeses);
         }
 
-        public ActionResult ExportarExcel(List<Yape> lista)
+        public ActionResult ExportarExcel(List<Yape> lista, string[] meses)
         {
-            DataTable dataTable = new DataTable();
-            dataTable.TableName = "ReporteYapes";
-            dataTable.Clear();
-            dataTable.Columns.Add("ID");
-            dataTable.Columns.Add("Numero Recibidor");
-            dataTable.Columns.Add("Numero Realizador");
-            dataTable.Columns.Add("Monto");
-            dataTable.Columns.Add("Fecha");
+            XLWorkbook xls = new XLWorkbook();
 
-            for(int i = 0; lista.Count() > i; i++)
+            for (int i = 0; meses.Length > i; i++)
             {
-                DataRow dr = dataTable.NewRow();
-                dr["ID"] = lista[i].IDE_YAP.ToString();
-                dr["Numero Recibidor"] = lista[i].NRC_YAP;
-                dr["Numero Realizador"] = lista[i].NRZ_YAP;
-                dr["Monto"] = lista[i].MON_YAP.ToString();
-                dr["Fecha"] = lista[i].Fecha;
-                dataTable.Rows.Add(dr);
-            }
+                DataTable dataTable = new DataTable();
+                dataTable.TableName = meses[i];
+                dataTable.Clear();
 
-            using (XLWorkbook xls = new XLWorkbook())
-            {
-                xls.Worksheets.Add(dataTable);
-                using(MemoryStream st = new MemoryStream())
+                dataTable.Columns.Add("ID");
+                dataTable.Columns.Add("Numero Recibidor");
+                dataTable.Columns.Add("Numero Realizador");
+                dataTable.Columns.Add("Monto");
+                dataTable.Columns.Add("Fecha");
+
+                for (int a = 0; lista.Count() > a; a++)
                 {
-                    xls.SaveAs(st);
-                    return File(st.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                    if (lista[a].Fecha.Contains(meses[i]))
+                    {
+                        DataRow dr = dataTable.NewRow();
+                        dr["ID"] = lista[a].IDE_YAP.ToString();
+                        dr["Numero Recibidor"] = lista[a].NRC_YAP;
+                        dr["Numero Realizador"] = lista[a].NRZ_YAP;
+                        dr["Monto"] = lista[a].MON_YAP.ToString();
+                        dr["Fecha"] = lista[a].Fecha;
+                        dataTable.Rows.Add(dr);
+                    }
                 }
+                xls.Worksheets.Add(dataTable);
             }
-            //var gv = new GridView();
-            //gv.DataSource = lista;
-            //gv.DataBind();
-            //Response.ClearContent();
-            //Response.Buffer = true;
-            //Response.AddHeader("content-disposition", "attachment; filename=ReporteYapes.xls");
-            //Response.ContentType = "application/ms-excel";
-            //Response.Charset = "";
-            //StringWriter sw = new StringWriter();
-            //HtmlTextWriter htw = new HtmlTextWriter(sw);
-            //gv.RenderControl(htw);
-            //Response.Output.Write(sw.ToString());
-            //Response.Flush();
-            //Response.End();
-            //return View("Index");
+
+            using (MemoryStream st = new MemoryStream())
+            {
+                xls.SaveAs(st);
+                return File(st.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            }
         }
     }
 }
