@@ -7,8 +7,14 @@
 }
 
 @{
-    string nombre = Session["Nombre"].ToString();
-    string saldo = Session["Saldo"].ToString();
+    string nombre = "";
+    string saldo = "";
+    if (Session["Numero"] != null)
+    {
+        nombre = Session["Nombre"].ToString();
+        saldo = Session["Saldo"].ToString();
+
+    }
 }
 
 <h2>Hola, @nombre</h2>
@@ -18,13 +24,27 @@
     <div class="row m-auto">
         <div class="col-auto">
             <p>
-                @Html.ActionLink("Nuevo Yapeo", "RealizarYapeo", "Cliente", new { @class = "btn btn-primary" })
+                @Html.ActionLink("Nuevo Yapeo", "realizarYapeo", "Cliente", new { @class = "btn btn-primary" })
             </p>
         </div>
         <div class="col-auto row h-auto ms-5 flex-fill gap-3">
             <div class="col-auto">
-                @Html.ActionLink("Exportar Registros a PDF", "ActionPDFxFecha", "Cliente", new { @class = "btn btn-primary" })
+                @Html.ActionLink("Exportar Registros a PDF", "ActionPDF", "Cliente", new { @class = "btn btn-primary" })
             </div>
+            @{
+                if (Session["Numero"] != null)
+                {
+                    <div class="col-auto">
+                        @Html.ActionLink("Exportar Registros a Excel", "ActionExportarExcel", "Cliente", new { @class = "btn btn-primary" })
+                    </div>
+                }
+                else
+                {
+                    <div class="col-auto">
+                        @Html.ActionLink("Exportar Registros a Excel", "ActionCerrarSesion", "Cliente", new { @class = "btn btn-primary" })
+                    </div>
+                }
+            }
             @using (Html.BeginForm("ActionFiltrarYapesXFecha", "Cliente", FormMethod.Post, new { @class = "w-auto col-auto h-auto gap-1" }))
             {
                 <input type="date" name="fecha" style="border-radius: 5.5px; margin-top: auto" />
@@ -41,7 +61,7 @@
     <div class="alert alert-danger" role="alert">
         @ViewBag.error
     </div>
-    @Html.ActionLink("Regresar al listado principal", "Index", "Cliente", new {@class = "btn btn-secondary"})
+    @Html.ActionLink("Regresar al listado principal", "Index", "Cliente", new { @class = "btn btn-secondary" })
 }
 else
 {
