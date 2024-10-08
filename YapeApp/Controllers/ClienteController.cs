@@ -491,7 +491,7 @@ namespace YapeApp.Controllers
         {
             List<string> years = new List<string>();
 
-            SqlCommand cmd = new SqlCommand("SP_ObtenerYear", cnx);
+            SqlCommand cmd = new SqlCommand("SP_ObtenerAnosYapeados", cnx);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@numero", Session["Numero"]);
             cnx.Open();

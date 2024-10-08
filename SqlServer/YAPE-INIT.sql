@@ -19,7 +19,7 @@ GO
 CREATE TABLE LOGINS.CLIENTE
 (
 	IDE_CLI		INT				PRIMARY KEY NONCLUSTERED IDENTITY(1,1),
-	DNI_CLI		CHAR(9)			NOT NULL UNIQUE,
+	DNI_CLI		CHAR(8)			NOT NULL UNIQUE,
 	NOM_CLI		VARCHAR(50)		NOT NULL,
 	APE_CLI		VARCHAR(50)		NOT NULL,
 	NUM_CLI		CHAR(9)			NOT NULL UNIQUE,
@@ -66,12 +66,12 @@ GO
 INSERT INTO LOGINS.CLIENTE
 	(DNI_CLI, NOM_CLI, APE_CLI, NUM_CLI, SAL_CLI, CLA_CLI)
 VALUES
-	('78474311','Diego Anderson','Villena Arias','999888777',384.24,'Diego24'),
-	('73674621','Dario Benjamin','Quintana Pascual','999333222',511.34,'Benja31'),
-	('48575221','Flor Ariana','Tuesta Quesada','913344552',1384.34,'Flor38'),
-	('87384721','Jaime Juan','Flores Quispe','987654321',1003.12,'Juan32'),
-	('03117349','Zoe Jazmin','Alvarado Pinedo','906598836',124.34,'zoe122'),
-	('30483273','Sara Luna','Nieves Urbina','954316450',2230.12,'sara239')
+	('7847431','Diego Anderson','Villena Arias','999888777',384.24,'Diego24'),
+	('7367462','Dario Benjamin','Quintana Pascual','999333222',511.34,'Benja31'),
+	('4857522','Flor Ariana','Tuesta Quesada','913344552',1384.34,'Flor38'),
+	('8738472','Jaime Juan','Flores Quispe','987654321',1003.12,'Juan32'),
+	('0311734','Zoe Jazmin','Alvarado Pinedo','906598836',124.34,'zoe122'),
+	('3048327','Sara Luna','Nieves Urbina','954316450',2230.12,'sara239')
 GO
 
 INSERT INTO DATOS.YAPE
@@ -132,12 +132,12 @@ GO
 
 CREATE FUNCTION FN_BuscarDNI
 (
-	@dni CHAR(9)
+	@dni CHAR(8)
 )
-RETURNS CHAR(9)
+RETURNS CHAR(8)
 AS
 BEGIN
-	DECLARE @resultado CHAR(9);
+	DECLARE @resultado CHAR(8);
 
 	SELECT @resultado = C.DNI_CLI
 	FROM LOGINS.CLIENTE AS C
@@ -164,9 +164,9 @@ BEGIN
 END
 GO
 
-CREATE FUNCTION FN_ObtenerID
+CREATE OR ALTER FUNCTION FN_ObtenerID
 (
-	@numero	INT
+	@numero	CHAR(9)
 )
 RETURNS INT
 AS
@@ -182,7 +182,7 @@ END
 GO
 
 CREATE OR ALTER PROCEDURE SP_BuscarDNI(
-	@dni CHAR(9)
+	@dni CHAR(8)
 )
 AS
 BEGIN
@@ -204,7 +204,7 @@ END
 GO
 
 CREATE OR ALTER PROCEDURE SP_RegistrarCliente(
-	@dni		CHAR(9),
+	@dni		CHAR(8),
 	@nombre		VARCHAR(50),
 	@apellido	VARCHAR(50),
 	@numero		CHAR(9),
@@ -212,7 +212,7 @@ CREATE OR ALTER PROCEDURE SP_RegistrarCliente(
 )
 AS
 BEGIN
-	DECLARE @existeDNI CHAR(9);
+	DECLARE @existeDNI CHAR(8);
 	DECLARE @existeNumero INT;
 
 	EXEC @existeDNI = FN_BuscarDNI @dni;
@@ -418,7 +418,7 @@ BEGIN
 END
 GO
 
-CREATE OR ALTER PROCEDURE SP_ObtenerYear
+CREATE OR ALTER PROCEDURE SP_ObtenerAnosYapeados
 (
 	@numero CHAR(9)
 )
