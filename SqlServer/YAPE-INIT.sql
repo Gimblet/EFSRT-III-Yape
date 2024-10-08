@@ -348,6 +348,11 @@ BEGIN
 			SELECT 'Error >> Numero no Encontrado' AS [Mensaje]
 			RETURN;
 		END
+	ELSE IF(@idRecibiente = @idRealizante)
+		BEGIN
+			SELECT 'Error >> No es posible realizar un Yape a tu propio numero' AS [Mensaje]
+			RETURN;
+		END
 	ELSE
 		BEGIN
 			SELECT 'Yape Realizado Correctamente' AS [Mensaje]
