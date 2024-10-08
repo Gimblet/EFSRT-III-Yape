@@ -17,6 +17,20 @@
     }
 }
 
+<style>
+    .pdf:hover{
+        background-color: #ff0000;
+        border-color: #ff0000;
+        transition: 0.55s;
+    }
+
+    .excel:hover{
+        background-color: #509421;
+        border-color: #509421;
+        transition: 0.55s;
+    }
+</style>
+
 <h2>Hola, @nombre</h2>
 <h3>Saldo : @saldo</h3>
 
@@ -29,19 +43,19 @@
         </div>
         <div class="col-auto row h-auto ms-5 flex-fill gap-3">
             <div class="col-auto">
-                @Html.ActionLink("Exportar Registros a PDF", "ActionPDF", "Cliente", new { @class = "btn btn-primary" })
+                @Html.ActionLink("Exportar Registros a PDF", "ActionPDF", "Cliente", new { @class = "btn btn-primary pdf" })
             </div>
             @{
                 if (Session["Numero"] != null)
                 {
                     <div class="col-auto">
-                        @Html.ActionLink("Exportar Registros a Excel", "ActionExportarExcel", "Cliente", new { @class = "btn btn-primary" })
+                        @Html.ActionLink("Exportar Registros a Excel", "ActionExportarExcel", "Cliente", new { @class = "btn btn-primary excel" })
                     </div>
                 }
                 else
                 {
                     <div class="col-auto">
-                        @Html.ActionLink("Exportar Registros a Excel", "ActionCerrarSesion", "Cliente", new { @class = "btn btn-primary" })
+                        @Html.ActionLink("Exportar Registros a Excel", "ActionCerrarSesion", "Cliente", new { @class = "btn btn-primary excel" })
                     </div>
                 }
             }
