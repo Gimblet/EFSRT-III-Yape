@@ -31,26 +31,42 @@ namespace YapeApp.Controllers
         public List<Yape> listarYapes()
         {
             List<Yape> lista = new List<Yape>();
-            SqlCommand cmd = new SqlCommand("SP_ListarYapes", cnx);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@numero", Session["Numero"]);
-            cnx.Open();
-            IDataReader dr = cmd.ExecuteReader();
-            while (dr.Read())
+            if (sesionActiva())
             {
-                Yape yape = new Yape();
+                SqlCommand cmd = new SqlCommand("SP_ListarYapes", cnx);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@numero", Session["Numero"]);
+                cnx.Open();
+                IDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
                 {
-                    yape.IDE_YAP = dr.GetInt32(0);
-                    yape.NRC_YAP = dr.GetString(1);
-                    yape.NRZ_YAP = dr.GetString(2);
-                    yape.MON_YAP = dr.GetDouble(3);
-                    yape.Fecha = dr.GetString(4);
+                    Yape yape = new Yape();
+                    {
+                        yape.IDE_YAP = dr.GetInt32(0);
+                        yape.NRC_YAP = dr.GetString(1);
+                        yape.NRZ_YAP = dr.GetString(2);
+                        yape.MON_YAP = dr.GetDouble(3);
+                        yape.Fecha = dr.GetString(4);
+                    };
+                    lista.Add(yape);
                 };
-                lista.Add(yape);
-            };
-            cnx.Close();
-            dr.Close();
+                cnx.Close();
+                dr.Close();
+            }
+            else
+            {
+                ActionCerrarSesion();
+            }
             return lista;
+        }
+
+        public bool sesionActiva()
+        {
+            if (Session["Numero"] != null)
+            {
+                return true;
+            }
+            return false;
         }
 
         public string cerrarSesion()
@@ -102,54 +118,68 @@ namespace YapeApp.Controllers
         private List<Yape> filtrarYapesXFecha(string fecha)
         {
             List<Yape> lista = new List<Yape>();
-            SqlCommand cmd = new SqlCommand("SP_BuscarYapeXFecha", cnx);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@numero", Session["Numero"]);
-            cmd.Parameters.AddWithValue("@fecha", fecha);
-            cnx.Open();
-            SqlDataReader dr = cmd.ExecuteReader();
-            while (dr.Read())
+            if (sesionActiva())
             {
-                Yape yape = new Yape();
+                SqlCommand cmd = new SqlCommand("SP_BuscarYapeXFecha", cnx);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@numero", Session["Numero"]);
+                cmd.Parameters.AddWithValue("@fecha", fecha);
+                cnx.Open();
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
                 {
-                    yape.IDE_YAP = dr.GetInt32(0);
-                    yape.NRC_YAP = dr.GetString(1);
-                    yape.NRZ_YAP = dr.GetString(2);
-                    yape.MON_YAP = dr.GetDouble(3);
-                    yape.Fecha = dr.GetString(4);
+                    Yape yape = new Yape();
+                    {
+                        yape.IDE_YAP = dr.GetInt32(0);
+                        yape.NRC_YAP = dr.GetString(1);
+                        yape.NRZ_YAP = dr.GetString(2);
+                        yape.MON_YAP = dr.GetDouble(3);
+                        yape.Fecha = dr.GetString(4);
+                    };
+                    lista.Add(yape);
                 };
-                lista.Add(yape);
-            };
-            dr.Close();
-            cnx.Close();
+                dr.Close();
+                cnx.Close();
+            }
+            else
+            {
+                ActionCerrarSesion();
+            }
             return lista;
         }
 
         private string Yapear(Yape yape)
         {
             string mensaje = string.Empty;
-            try
+            if (sesionActiva())
             {
-                SqlCommand cmd = new SqlCommand("Sp_RealizarYapeo", cnx);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@numeroRecibiente", yape.NRC_YAP);
-                cmd.Parameters.AddWithValue("@numeroRealizante", Session["Numero"]);
-                cmd.Parameters.AddWithValue("@monto", yape.MON_YAP);
-                cnx.Open();
-                SqlDataReader dr = cmd.ExecuteReader();
-                if (dr.Read())
+                try
                 {
-                    mensaje = dr[0].ToString();
-                }
+                    SqlCommand cmd = new SqlCommand("Sp_RealizarYapeo", cnx);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@numeroRecibiente", yape.NRC_YAP);
+                    cmd.Parameters.AddWithValue("@numeroRealizante", Session["Numero"]);
+                    cmd.Parameters.AddWithValue("@monto", yape.MON_YAP);
+                    cnx.Open();
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    if (dr.Read())
+                    {
+                        mensaje = dr[0].ToString();
+                    }
 
+                }
+                catch (Exception ex)
+                {
+                    mensaje = ex.Message;
+                }
+                finally
+                {
+                    cnx.Close();
+                }
             }
-            catch (Exception ex)
+            else
             {
-                mensaje = ex.Message;
-            }
-            finally
-            {
-                cnx.Close();
+                ActionCerrarSesion();
             }
             return mensaje;
         }
@@ -174,32 +204,39 @@ namespace YapeApp.Controllers
         public Detalles ObtenerDetallesYape(int id)
         {
             Detalles detalle = null;
-            try
+            if (sesionActiva())
             {
-                SqlCommand cmd = new SqlCommand("SP_ObtenerDetallesYape", cnx);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@id", id);
-                cnx.Open();
-                SqlDataReader dr = cmd.ExecuteReader();
-                if (dr.Read())
+                try
                 {
-                    detalle = new Detalles();
-                    detalle.IDE_YAP = dr.GetInt32(0);
-                    detalle.NRC_YAP = dr.GetString(1);
-                    detalle.NOM_REC = dr.GetString(2);
-                    detalle.NRZ_YAP = dr.GetString(3);
-                    detalle.NOM_REA = dr.GetString(4);
-                    detalle.MON_YAP = dr.GetDouble(5);
-                    detalle.Fecha = dr.GetString(6);
+                    SqlCommand cmd = new SqlCommand("SP_ObtenerDetallesYape", cnx);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cnx.Open();
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    if (dr.Read())
+                    {
+                        detalle = new Detalles();
+                        detalle.IDE_YAP = dr.GetInt32(0);
+                        detalle.NRC_YAP = dr.GetString(1);
+                        detalle.NOM_REC = dr.GetString(2);
+                        detalle.NRZ_YAP = dr.GetString(3);
+                        detalle.NOM_REA = dr.GetString(4);
+                        detalle.MON_YAP = dr.GetDouble(5);
+                        detalle.Fecha = dr.GetString(6);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+                finally
+                {
+                    cnx.Close();
                 }
             }
-            catch (Exception ex)
+            else
             {
-                throw new Exception(ex.Message);
-            }
-            finally
-            {
-                cnx.Close();
+                ActionCerrarSesion();
             }
             return detalle;
         }
@@ -254,6 +291,7 @@ namespace YapeApp.Controllers
             ViewBag.mensaje = mensaje;
             return View("~/Views/Login/ActionLogin.cshtml");
         }
+
         public ActionResult ActionFiltrarYapesXFecha(string fecha)
         {
             Session["fecha"] = fecha;

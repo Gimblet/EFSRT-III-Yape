@@ -28,7 +28,17 @@
                     <li>@Html.ActionLink("Nosotros", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                 </ul>
                 <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Iniciar Sesión", "ActionLogin", "Login", new { area = "" }, new { @class = "nav-link" })</li>
+                    @{
+                        if (Session["Numero"] != null)
+                        {
+
+                            <li>@Html.ActionLink("Iniciar Sesión", "Index", "Cliente", new { area = "" }, new { @class = "nav-link" })</li>
+                        }
+                        else
+                        {
+                            <li>@Html.ActionLink("Iniciar Sesión", "ActionLogin", "Login", new { area = "" }, new { @class = "nav-link" })</li>
+                        }
+                    }
                     <li>@Html.ActionLink("Registrarse", "ActionRegistrar", "Login", new { area = "" }, new { @class = "nav-link" })</li>
                 </ul>
             </div>
