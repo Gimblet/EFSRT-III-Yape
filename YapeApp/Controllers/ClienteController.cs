@@ -487,10 +487,9 @@ namespace YapeApp.Controllers
             return lista.ToArray();
         }
 
-        public int[] filtrarYears(List<Yape> listaYapes)
+        public string[] filtrarYears(List<Yape> listaYapes)
         {
-            List<int> years = new List<int>();
-            int i = 0;
+            List<string> years = new List<string>();
 
             SqlCommand cmd = new SqlCommand("SP_ObtenerYear", cnx);
             cmd.CommandType = CommandType.StoredProcedure;
@@ -499,7 +498,7 @@ namespace YapeApp.Controllers
             SqlDataReader dr = cmd.ExecuteReader();
             while (dr.Read())
             {
-                years.Add(dr.GetInt32(0));
+                years.Add(dr.GetInt32(0).ToString());
             }
             cnx.Close();
             dr.Close();
@@ -512,71 +511,77 @@ namespace YapeApp.Controllers
         {
             List<Yape> listaYapes = listarYapes();
             string[] listaMeses = filtrarMeses(listaYapes);
-            int[] listaYears = filtrarYears(listaYapes);
+            string[] listaYears = filtrarYears(listaYapes);
             return ExportarExcel(listaYapes, listaMeses, listaYears);
         }
 
-        public ActionResult ExportarExcel(List<Yape> lista, string[] meses, int[] years)
+        public ActionResult ExportarExcel(List<Yape> lista, string[] meses, string[] years)
         {
             XLWorkbook xls = new XLWorkbook();
-            double totalYapeado = 0.0, totalRecibido = 0.0;
 
             for (int y = 0; years.Length > y; y++)
             {
-
-            }
-
-            for (int i = 0; meses.Length > i; i++)
-            {
-                var ws = xls.AddWorksheet();
-                DataTable dataTable = new DataTable();
-                dataTable.TableName = meses[i];
-                dataTable.Clear();
-
-                dataTable.Columns.Add("ID");
-                dataTable.Columns.Add("Numero Recibidor");
-                dataTable.Columns.Add("Numero Realizador");
-                dataTable.Columns.Add("Monto");
-                dataTable.Columns.Add("Fecha");
-
-                for (int a = 0; lista.Count() > a; a++)
+                for (int i = 0; meses.Length > i; i++)
                 {
-                    if (lista[a].Fecha.Contains(meses[i]))
-                    {
-                        DataRow dr = dataTable.NewRow();
-                        dr["ID"] = lista[a].IDE_YAP;
-                        dr["Numero Recibidor"] = int.Parse(lista[a].NRC_YAP);
-                        dr["Numero Realizador"] = int.Parse(lista[a].NRZ_YAP);
-                        dr["Monto"] = lista[a].MON_YAP;
-                        dr["Fecha"] = lista[a].Fecha;
-                        dataTable.Rows.Add(dr);
+                    double totalYapeado = 0.0, totalRecibido = 0.0;
+                    bool hayDatos = false;
 
-                        if (lista[a].NRC_YAP.Equals(Session["Numero"])) totalRecibido += lista[a].MON_YAP;
-                        if (lista[a].NRZ_YAP.Equals(Session["Numero"])) totalYapeado += lista[a].MON_YAP;
+                    DataTable dataTable = new DataTable();
+                    dataTable.TableName = meses[i];
+                    dataTable.Clear();
+
+                    dataTable.Columns.Add("ID");
+                    dataTable.Columns.Add("Numero Recibidor");
+                    dataTable.Columns.Add("Numero Realizador");
+                    dataTable.Columns.Add("Monto");
+                    dataTable.Columns.Add("Fecha");
+
+                    for (int a = 0; lista.Count() > a; a++)
+                    {
+                        if (lista[a].Fecha.Contains(meses[i]) && lista[a].Fecha.Contains(years[y]))
+                        {
+                            DataRow dr = dataTable.NewRow();
+                            dr["ID"] = lista[a].IDE_YAP;
+                            dr["Numero Recibidor"] = int.Parse(lista[a].NRC_YAP);
+                            dr["Numero Realizador"] = int.Parse(lista[a].NRZ_YAP);
+                            dr["Monto"] = lista[a].MON_YAP;
+                            dr["Fecha"] = lista[a].Fecha;
+                            dataTable.Rows.Add(dr);
+
+                            if (lista[a].NRC_YAP.Equals(Session["Numero"])) totalRecibido += lista[a].MON_YAP;
+                            if (lista[a].NRZ_YAP.Equals(Session["Numero"])) totalYapeado += lista[a].MON_YAP;
+
+                            hayDatos = true;
+                        }
+                    }
+
+                    if (hayDatos)
+                    {
+                        var ws = xls.AddWorksheet();
+
+                        ws.Name = meses[i] + " - " + years[y];
+                        ws.ColumnWidth = 36;
+                        ws.Cell("A2").Style.Font.SetFontSize(22);
+                        ws.Cell("A2").Style.Font.SetBold(true);
+                        ws.Cell("A2").Style.Font.SetItalic(true);
+                        ws.Cell("A2").Style.Font.SetUnderline(XLFontUnderlineValues.Single);
+                        ws.Cell("A2").Value = "Reporte de " + meses[i];
+
+                        ws.Cell("A4").Value = "TOTALES";
+                        ws.Cell("A4").Style.Fill.SetBackgroundColor(XLColor.Gray);
+                        ws.Cell("A4").Style.Font.SetBold(true);
+                        ws.Cell("A5").Value = "Total Yapeado : S/" + totalYapeado;
+                        ws.Cell("A5").Style.Fill.SetBackgroundColor(XLColor.DarkGray);
+                        ws.Cell("A6").Value = "Total Recibido : S/" + totalRecibido;
+                        ws.Cell("A6").Style.Fill.SetBackgroundColor(XLColor.DarkGray);
+
+                        var tabla = ws.Cell("B4").InsertTable(dataTable);
+
+                        tabla.Theme = XLTableTheme.TableStyleMedium5;
+                        tabla.SetShowHeaderRow(true);
+                        tabla.SetShowAutoFilter(false);
                     }
                 }
-
-                ws.Name = meses[i];
-                ws.ColumnWidth = 36;
-                ws.Cell("A2").Style.Font.SetFontSize(22);
-                ws.Cell("A2").Style.Font.SetBold(true);
-                ws.Cell("A2").Style.Font.SetItalic(true);
-                ws.Cell("A2").Style.Font.SetUnderline(XLFontUnderlineValues.Single);
-                ws.Cell("A2").Value = "Reporte de " + meses[i];
-
-                ws.Cell("A4").Value = "TOTALES";
-                ws.Cell("A4").Style.Fill.SetBackgroundColor(XLColor.Gray);
-                ws.Cell("A4").Style.Font.SetBold(true);
-                ws.Cell("A5").Value = "Total Yapeado : S/" + totalYapeado;
-                ws.Cell("A5").Style.Fill.SetBackgroundColor(XLColor.DarkGray);
-                ws.Cell("A6").Value = "Total Recibido : S/" + totalRecibido;
-                ws.Cell("A6").Style.Fill.SetBackgroundColor(XLColor.DarkGray);
-
-                var tabla = ws.Cell("B4").InsertTable(dataTable);
-
-                tabla.Theme = XLTableTheme.TableStyleMedium5;
-                tabla.SetShowHeaderRow(true);
-                tabla.SetShowAutoFilter(false);
             }
 
             using (MemoryStream st = new MemoryStream())
