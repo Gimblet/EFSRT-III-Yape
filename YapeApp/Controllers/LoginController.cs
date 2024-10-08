@@ -22,11 +22,11 @@ namespace YapeApp.Controllers
             string mensaje = "";
             if (esDNIRegistrado(datos))
             {
-                mensaje = "El DNI ya se encuentra registrado";
+                mensaje = "Error >> El DNI ya se encuentra registrado";
             }
             else if (esNumeroRegistrado(datos))
             {
-                mensaje = "El numero ya se encuentra registrado";
+                mensaje = "Error >> El numero ya se encuentra registrado";
             }
             else
             {
@@ -41,7 +41,7 @@ namespace YapeApp.Controllers
                 cmd.ExecuteNonQuery();
                 cnx.Close();
 
-                mensaje = "Registrado exitosamente";
+                mensaje = "Registrado exitosamente, ingrese sus credenciales";
             }
             return mensaje;
         }
@@ -263,14 +263,14 @@ namespace YapeApp.Controllers
         public ActionResult ActionRegistrar(Cliente datosRecibidos)
         {
             string resultado = registrarCliente(datosRecibidos);
-            if (resultado.Contains("Ya se encuentra registrado"))
+            if (resultado.Contains("Error"))
             {
                 ViewBag.Mensaje = resultado;
                 return View();
             }
             else
             {
-                ViewBag.Mensaje = resultado;
+                ViewBag.MensajeBueno = resultado;
                 return View("~/Views/Login/ActionLogin.cshtml");
             }
         }

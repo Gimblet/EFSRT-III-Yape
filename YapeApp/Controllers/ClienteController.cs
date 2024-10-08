@@ -72,7 +72,7 @@ namespace YapeApp.Controllers
         public string cerrarSesion()
         {
             int id = obtenerId();
-            string respuesta = "Sesion Invalida";
+            string respuesta = "Error >> Sesion Invalida";
             if (id != -1)
             {
                 SqlCommand cmd = new SqlCommand("SP_EliminarSesion", cnx);
@@ -284,34 +284,52 @@ namespace YapeApp.Controllers
         public ActionResult ActionCerrarSesion()
         {
             string mensaje = cerrarSesion();
-            if (mensaje.Equals("Sesion Invalida"))
+            if (mensaje.Equals("Error >> Sesion Invalida"))
             {
                 mensaje = "Ocurrió un problema, vuelva a iniciar Sesión";
+                ViewBag.mensaje = mensaje;
             }
-            ViewBag.mensaje = mensaje;
+            else
+            {
+                ViewBag.MensajeBueno = mensaje;
+            }
             return View("~/Views/Login/ActionLogin.cshtml");
         }
 
         public ActionResult ActionFiltrarYapesXFecha(string fecha)
         {
-            Session["fecha"] = fecha;
-            List<Yape> listarYapes = filtrarYapesXFecha(fecha);
-            if (listarYapes.Count() == 0)
+            if (sesionActiva())
             {
-                ViewBag.error = "No se encontraron yapes, verifique la fecha seleccionada";
+                Session["fecha"] = fecha;
+                List<Yape> listarYapes = filtrarYapesXFecha(fecha);
+                if (listarYapes.Count() == 0)
+                {
+                    ViewBag.error = "No se encontraron yapes, verifique la fecha seleccionada";
+                }
+                return View(listarYapes);
             }
-            return View(listarYapes);
+            else
+            {
+                return ActionCerrarSesion();
+            }
         }
 
         public ActionResult realizarYapeo(string mensaje)
         {
-            if (!mensaje.IsEmpty() && mensaje.Contains("Error"))
+            if (sesionActiva())
             {
-                ViewBag.error = mensaje;
+                if (!mensaje.IsEmpty() && mensaje.Contains("Error"))
+                {
+                    ViewBag.error = mensaje;
+                    return View();
+                }
+                ViewBag.mensaje = mensaje;
                 return View();
             }
-            ViewBag.mensaje = mensaje;
-            return View();
+            else
+            {
+                return ActionCerrarSesion();
+            }
         }
 
         [HttpPost]
@@ -333,19 +351,33 @@ namespace YapeApp.Controllers
         [HttpGet]
         public ActionResult ActionPDFxFecha()
         {
-            List<Yape> lista = filtrarYapesXFecha(Session["fecha"].ToString());
-            var placeholder = GenerarPDF(lista);
-            var pdf = placeholder.GeneratePdf();
-            return File(pdf, "application/pdf", "ReporteYapes.pdf");
+            if (sesionActiva())
+            {
+                List<Yape> lista = filtrarYapesXFecha(Session["fecha"].ToString());
+                var placeholder = GenerarPDF(lista);
+                var pdf = placeholder.GeneratePdf();
+                return File(pdf, "application/pdf", "ReporteYapes.pdf");
+            }
+            else
+            {
+                return ActionCerrarSesion();
+            }
         }
 
         [HttpGet]
         public ActionResult ActionPDF(string fecha)
         {
-            List<Yape> lista = listarYapes();
-            var placeholder = GenerarPDF(lista);
-            var pdf = placeholder.GeneratePdf();
-            return File(pdf, "application/pdf", "ReporteYapes.pdf");
+            if (sesionActiva())
+            {
+                List<Yape> lista = listarYapes();
+                var placeholder = GenerarPDF(lista);
+                var pdf = placeholder.GeneratePdf();
+                return File(pdf, "application/pdf", "ReporteYapes.pdf");
+            }
+            else
+            {
+                return ActionCerrarSesion();
+            }
         }
 
         IDocument GenerarPDF(List<Yape> lista)
@@ -547,6 +579,10 @@ namespace YapeApp.Controllers
         [HttpGet]
         public ActionResult ActionExportarExcel()
         {
+            if (!sesionActiva())
+            {
+                return ActionCerrarSesion();
+            }
             List<Yape> listaYapes = listarYapes();
             string[] listaMeses = filtrarMeses(listaYapes);
             string[] listaYears = filtrarYears(listaYapes);
