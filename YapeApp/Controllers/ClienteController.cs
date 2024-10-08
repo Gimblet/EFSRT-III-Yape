@@ -487,18 +487,44 @@ namespace YapeApp.Controllers
             return lista.ToArray();
         }
 
+        public int[] filtrarYears(List<Yape> listaYapes)
+        {
+            List<int> years = new List<int>();
+            int i = 0;
+
+            SqlCommand cmd = new SqlCommand("SP_ObtenerYear", cnx);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@numero", Session["Numero"]);
+            cnx.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                years.Add(dr.GetInt32(0));
+            }
+            cnx.Close();
+            dr.Close();
+
+            return years.ToArray();
+        }
+
         [HttpGet]
         public ActionResult ActionExportarExcel()
         {
             List<Yape> listaYapes = listarYapes();
             string[] listaMeses = filtrarMeses(listaYapes);
-            return ExportarExcel(listaYapes, listaMeses);
+            int[] listaYears = filtrarYears(listaYapes);
+            return ExportarExcel(listaYapes, listaMeses, listaYears);
         }
 
-        public ActionResult ExportarExcel(List<Yape> lista, string[] meses)
+        public ActionResult ExportarExcel(List<Yape> lista, string[] meses, int[] years)
         {
             XLWorkbook xls = new XLWorkbook();
             double totalYapeado = 0.0, totalRecibido = 0.0;
+
+            for (int y = 0; years.Length > y; y++)
+            {
+
+            }
 
             for (int i = 0; meses.Length > i; i++)
             {
@@ -536,7 +562,7 @@ namespace YapeApp.Controllers
                 ws.Cell("A2").Style.Font.SetBold(true);
                 ws.Cell("A2").Style.Font.SetItalic(true);
                 ws.Cell("A2").Style.Font.SetUnderline(XLFontUnderlineValues.Single);
-                ws.Cell("A2").Value = "Reporte de " + meses[i] + "para " + Session["Numero"];
+                ws.Cell("A2").Value = "Reporte de " + meses[i];
 
                 ws.Cell("A4").Value = "TOTALES";
                 ws.Cell("A4").Style.Fill.SetBackgroundColor(XLColor.Gray);

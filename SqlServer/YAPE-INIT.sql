@@ -413,6 +413,22 @@ BEGIN
 END
 GO
 
+CREATE OR ALTER PROCEDURE SP_ObtenerYear
+(
+	@numero CHAR(9)
+)
+AS
+BEGIN
+	SELECT DISTINCT YEAR(Y.FEC_YAP) 
+	FROM DATOS.YAPE AS Y
+	WHERE Y.NRC_YAP = @numero OR Y.NRZ_YAP = @numero
+END
+GO
+
+-- SP_ObtenerYear '999888777'
+-- GO
+
+
 CREATE OR ALTER PROCEDURE SP_BuscarYapeXFecha
 (
 	@numero CHAR(9),
