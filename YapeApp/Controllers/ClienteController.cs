@@ -268,11 +268,23 @@ namespace YapeApp.Controllers
         // GET: Cliente
         public ActionResult Index(string mensaje)
         {
-            if (!mensaje.IsEmpty())
+            if (sesionActiva())
             {
-                ViewBag.mensaje = mensaje;
+                List<Yape> lista = listarYapes();
+                if(lista.Count() == 0)
+                {
+                    ViewBag.aviso = "Realize o Reciba por lo menos un Yape para comenzar a ver su historial";
+                }
+                if (!mensaje.IsEmpty())
+                {
+                    ViewBag.mensaje = mensaje;
+                }
+                return View(listarYapes());
             }
-            return View(listarYapes());
+            else
+            {
+                return ActionCerrarSesion();
+            }
         }
 
         public ActionResult Details(int id)

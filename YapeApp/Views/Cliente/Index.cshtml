@@ -63,28 +63,33 @@
     </div>
 </div>
 <table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.IDE_YAP)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.NRC_YAP)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.NRZ_YAP)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.MON_YAP)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Fecha)
-        </th>
-        <th></th>
-    </tr>
-
     @{
-        if (Model != null)
+        if (ViewBag.aviso != null)
         {
+            <div class="alert alert-info" >
+                @ViewBag.aviso
+            </div>
+        }
+        else
+        {
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.IDE_YAP)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NRC_YAP)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NRZ_YAP)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MON_YAP)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fecha)
+                </th>
+                <th></th>
+            </tr>
 
             foreach (var item in Model)
             {
@@ -110,11 +115,6 @@
                 </tr>
             }
         }
-        else
-        {
-            <tr>
-                <td colspan="6">No hay registros</td>
-            </tr>
-        }
+
     }
 </table>
