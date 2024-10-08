@@ -498,6 +498,7 @@ namespace YapeApp.Controllers
         public ActionResult ExportarExcel(List<Yape> lista, string[] meses)
         {
             XLWorkbook xls = new XLWorkbook();
+            double totalYapeado = 0.0, totalRecibido = 0.0;
 
             for (int i = 0; meses.Length > i; i++)
             {
@@ -523,13 +524,27 @@ namespace YapeApp.Controllers
                         dr["Monto"] = lista[a].MON_YAP;
                         dr["Fecha"] = lista[a].Fecha;
                         dataTable.Rows.Add(dr);
+
+                        if (lista[a].NRC_YAP.Equals(Session["Numero"])) totalRecibido += lista[a].MON_YAP;
+                        if (lista[a].NRZ_YAP.Equals(Session["Numero"])) totalYapeado += lista[a].MON_YAP;
                     }
                 }
 
                 ws.Name = meses[i];
-                ws.ColumnWidth = 32;
-                ws.Cell("D2").Style.Font.SetFontSize(22);
-                ws.Cell("D2").Value = "Reporte " + meses[i];
+                ws.ColumnWidth = 36;
+                ws.Cell("A2").Style.Font.SetFontSize(22);
+                ws.Cell("A2").Style.Font.SetBold(true);
+                ws.Cell("A2").Style.Font.SetItalic(true);
+                ws.Cell("A2").Style.Font.SetUnderline(XLFontUnderlineValues.Single);
+                ws.Cell("A2").Value = "Reporte de " + meses[i] + "para " + Session["Numero"];
+
+                ws.Cell("A4").Value = "TOTALES";
+                ws.Cell("A4").Style.Fill.SetBackgroundColor(XLColor.Gray);
+                ws.Cell("A4").Style.Font.SetBold(true);
+                ws.Cell("A5").Value = "Total Yapeado : S/" + totalYapeado;
+                ws.Cell("A5").Style.Fill.SetBackgroundColor(XLColor.DarkGray);
+                ws.Cell("A6").Value = "Total Recibido : S/" + totalRecibido;
+                ws.Cell("A6").Style.Fill.SetBackgroundColor(XLColor.DarkGray);
 
                 var tabla = ws.Cell("B4").InsertTable(dataTable);
 
