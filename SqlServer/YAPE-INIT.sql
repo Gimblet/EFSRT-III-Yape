@@ -147,9 +147,9 @@ BEGIN
 END
 GO
 
-CREATE FUNCTION FN_BuscarTelefono
+CREATE OR ALTER FUNCTION FN_BuscarTelefono
 (
-	@numero INT
+	@numero CHAR(9)
 )
 RETURNS INT
 AS
