@@ -18,13 +18,13 @@
 }
 
 <style>
-    .pdf:hover{
+    .pdf:hover {
         background-color: #ff0000;
         border-color: #ff0000;
         transition: 0.55s;
     }
 
-    .excel:hover{
+    .excel:hover {
         background-color: #509421;
         border-color: #509421;
         transition: 0.55s;
@@ -34,93 +34,89 @@
 <h2>Hola, @nombre</h2>
 <h3>Saldo : @saldo</h3>
 
-<div class="container" style="margin-left: 15%">
-    <div class="row m-auto">
+<div class="container">
+    <div class="row mt-1 mb-1" style="margin: auto; width: max-content">
         <div class="col-auto">
-            <p>
-                @Html.ActionLink("Nuevo Yapeo", "realizarYapeo", "Cliente", new { @class = "btn btn-primary" })
-            </p>
+            @Html.ActionLink("Nuevo Yapeo", "realizarYapeo", "Cliente", new { @class = "btn btn-primary" })
         </div>
-        <div class="col-auto row h-auto ms-5 flex-fill gap-3">
-            <div class="col-auto">
-                @Html.ActionLink("Exportar Registros a PDF", "ActionPDF", "Cliente", new { @class = "btn btn-primary pdf" })
-            </div>
-            @{
-                if (Session["Numero"] != null)
-                {
-                    <div class="col-auto">
-                        @Html.ActionLink("Exportar Registros a Excel", "ActionExportarExcel", "Cliente", new { @class = "btn btn-primary excel" })
-                    </div>
-                }
-                else
-                {
-                    <div class="col-auto">
-                        @Html.ActionLink("Exportar Registros a Excel", "ActionCerrarSesion", "Cliente", new { @class = "btn btn-primary excel" })
-                    </div>
-                }
-            }
-            @using (Html.BeginForm("ActionFiltrarYapesXFecha", "Cliente", FormMethod.Post, new { @class = "w-auto col-auto h-auto gap-1" }))
+        <div class="col-auto">
+            @Html.ActionLink("Exportar Registros a PDF", "ActionPDF", "Cliente", new { @class = "btn btn-primary pdf" })
+        </div>
+        @{
+            if (Session["Numero"] != null)
             {
-                <input type="date" name="fecha" style="border-radius: 5.5px; margin-top: auto" />
-                <input type="submit" value="Filtrar" class="btn btn-primary" />
+                <div class="col-auto">
+                    @Html.ActionLink("Exportar Registros a Excel", "ActionExportarExcel", "Cliente", new { @class = "btn btn-primary excel" })
+                </div>
             }
-            <div class="col-auto">
-                @Html.ActionLink("Cerrar Sesion", "ActionCerrarSesion", "Cliente", new { @class = "btn btn-primary col-auto h-auto" })
-            </div>
+            else
+            {
+                <div class="col-auto">
+                    @Html.ActionLink("Exportar Registros a Excel", "ActionCerrarSesion", "Cliente", new { @class = "btn btn-primary excel" })
+                </div>
+            }
+        }
+        @using (Html.BeginForm("ActionFiltrarYapesXFecha", "Cliente", FormMethod.Post, new { @class = "w-auto col-auto h-auto gap-1" }))
+        {
+            <input type="date" name="fecha" style="border-radius: 5.5px; margin-top: auto" />
+            <input type="submit" value="Filtrar" class="btn btn-primary" />
+        }
+        <div class="col-auto">
+            @Html.ActionLink("Cerrar Sesion", "ActionCerrarSesion", "Cliente", new { @class = "btn btn-primary col-auto h-auto" })
         </div>
     </div>
-</div>
-@if (ViewBag.error != null)
-{
-    <div class="alert alert-danger" role="alert">
-        @ViewBag.error
-    </div>
-    @Html.ActionLink("Regresar al listado principal", "Index", "Cliente", new { @class = "btn btn-secondary" })
-}
-else
-{
-    <table class="table">
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.IDE_YAP)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NRC_YAP)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NRZ_YAP)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MON_YAP)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Fecha)
-            </th>
-            <th></th>
-        </tr>
-
-        @foreach (var item in Model)
-        {
+    @if (ViewBag.error != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @ViewBag.error
+        </div>
+        @Html.ActionLink("Regresar al listado principal", "Index", "Cliente", new { @class = "btn btn-secondary" })
+    }
+    else
+    {
+        <table class="table">
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IDE_YAP)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NRC_YAP)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NRZ_YAP)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.MON_YAP)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Fecha)
-                </td>
-                <td>
-                    @Html.ActionLink("Detalles", "Details", new { id = item.IDE_YAP })
-                </td>
+                <th>
+                    @Html.DisplayNameFor(model => model.IDE_YAP)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NRC_YAP)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NRZ_YAP)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MON_YAP)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fecha)
+                </th>
+                <th></th>
             </tr>
-        }
-    </table>
-}
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IDE_YAP)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NRC_YAP)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NRZ_YAP)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MON_YAP)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Detalles", "Details", new { id = item.IDE_YAP })
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+</div>
