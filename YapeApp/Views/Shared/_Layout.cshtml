@@ -16,7 +16,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
+                <ul class="navbar-nav">
                     @if (Session["Numero"] != null)
                     {
                         <li>@Html.ActionLink("Inicio", "Index", "Cliente", new { area = "" }, new { @class = "nav-link" })</li>
@@ -27,7 +27,7 @@
                     }
                     <li>@Html.ActionLink("Nosotros", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                 </ul>
-                <ul class="navbar-nav flex-grow-1">
+                <ul class="navbar-nav">
                     @{
                         if (Session["Numero"] != null)
                         {

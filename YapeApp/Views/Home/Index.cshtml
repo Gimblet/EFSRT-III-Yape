@@ -1,9 +1,46 @@
 @{
     ViewBag.Title = "Index";
 }
-<main aria-labelledby="title">
-    <section>
-       <img src="~/Content/Images/banner.png" style="width: 100vh"/>
-    </section>
 
-</main>
+<style>
+    .inner-seccion {
+        background-color: white;
+        margin: auto;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        width: 100%;
+    }
+
+    .info{
+        background-color: white;
+        margin: auto;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        width: 50%;
+        text-align: center;
+    }
+</style>
+
+<div class="container">
+    <main aria-labelledby="title" style="width: auto">
+        <img src="~/Content/Images/banner.png" style="width: 100%" />
+    </main>
+    <div class="mt-3">
+        <h2 class="info">Que es Yape Web?</h2>
+    </div>
+    <div class="seccion mt-3 container d-flex gap-4 align-items-center">
+        <section style="width: 50%">
+            <div class="container inner-seccion">
+                <h3 class="m-5">Yape Web es una <span style="color: #742384">nueva manera de interactuar con tu negocio!</span></h3>
+            </div>
+        </section>
+        <aside style="width: 50%;">
+            <div class="container inner-seccion">
+                <h3 class="m-5">Yape Web ha sido pensando para que negocios medianos y pequeños puedan tomar beneficio 
+                de la <span style="color: #742384">app de cartera digital mas popular de Perú.</span>  Con yape web ya no es necesario poseer un movil para realizar o recibir Pagos.</h3>
+            </div>
+        </aside>
+    </div>
+</div>
